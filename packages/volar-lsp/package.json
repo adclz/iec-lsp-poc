@@ -1,0 +1,14 @@
+{
+  "name": "iec-61331-lsp",
+  "version": "0.0.1",
+  "bin": {
+    "iec-61331-lsp": "./bin/iec-61331-lsp.js"
+  },
+  "dependencies": {
+    "@volar/language-core": "^2.3.4",
+    "@volar/language-server": "^2.3.4",
+    "@volar/language-service": "^2.3.4",
+    "vscode-uri": "^3.0.8",
+    "iec61331-tree-sitter": "workspace:*"
+  }
+}
