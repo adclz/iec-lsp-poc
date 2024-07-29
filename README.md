@@ -1,14 +1,14 @@
-# IEC 61331 Parser & lexer
+# IEC 61131 Parser & lexer
 
 This repositiory can be seen as the sequel to [Beremiz POC](https://github.com/adclz/refactored-pancake). 
 
-While the first one is mainly focused on implementing TC6 & XSLT processors to easily integrate Beremiz project files, this one is primarly about integrating a parser & lexer leveraging tree-sitter & language server protocol for IEC 61331 specifications.
+While the first one is mainly focused on implementing TC6 & XSLT processors to easily integrate Beremiz project files, this one is primarly about integrating a parser & lexer leveraging tree-sitter & language server protocol for IEC 61131 specifications.
 
 ![image info](/vsc-sample.PNG)
 
 ## Why tree-sitter
 
-[tree-sitter](https://tree-sitter.github.io/tree-sitter/) is a farily recent (2018) language-agnostic parser generator.
+[tree-sitter](https://tree-sitter.github.io/tree-sitter/) is a fairly recent (2018) language-agnostic parser generator.
 
 It has the following advantages:
  - Incremental parsing: Inital load of all data, then only code changes are taken into account.
@@ -18,7 +18,7 @@ It has the following advantages:
  - C file generation: The CLI tool generates a C file ready for editing, and not an executable.
  - Mulitple language bindings: Once the C file is generated, the CLI also provides bindings for various languages.
 
-You can find a more complete list of tree-sitter advantages & inconvenients[semantic repository](https://github.com/github/semantic/blob/main/docs/why-tree-sitter.md).
+You can find a more complete list of tree-sitter advantages & weaknesses on [semantic repository](https://github.com/github/semantic/blob/main/docs/why-tree-sitter.md).
 
 tree-sitter has strong community support and is already implemented in the following well-known environments:
  - [Neovim](https://neovim.io/doc/user/treesitter.html)
@@ -43,7 +43,7 @@ Thus, LSP integration can be seamlessly done in vscode, theia or even more IDEs.
 | Feature                                | Implemented | WIP |
 |----------------------------------------|-------------|-----|
 | LSP client                             | ✔️          |     |
-| IEC 61331-2 grammar:                   | -           | -   |
+| IEC 61131-2 grammar:                   | -           | -   |
 | B.0 Programming model                  | ✔️          |     |
 | B.1 Common elements                    |             | 🚧  |
 | B.1.1 Letters, digits and identifiers  | ✔️          |     |
@@ -86,7 +86,7 @@ Thus, LSP integration can be seamlessly done in vscode, theia or even more IDEs.
 │       ├── queries
 │           ├── highlights.scm - highlights queries
 │           └── indents.scm - indents queries
-│       └── grammar.js - IEC 61331-2 grammar 
+│       └── grammar.js - IEC 61131-2 grammar 
 │   ├── volar-lsp* - experimental volar package   
 │   └── vscode-extension
 │       └── src
