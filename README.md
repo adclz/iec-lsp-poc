@@ -4,7 +4,7 @@ This repositiory can be seen as the sequel to [Beremiz POC](https://github.com/a
 
 While the first one is mainly focused on implementing TC6 & XSLT processors to easily integrate Beremiz project files, this one is primarly about integrating a parser & lexer leveraging tree-sitter & language server protocol for IEC 61331 specifications.
 
-![image info](./vsc-sample.png)
+![image info](/vsc-sample.PNG)
 
 ## Why tree-sitter
 
@@ -36,7 +36,7 @@ The current features of the latest 3.17 specification are listed [here](https://
 
 Since its introduction in 2016, many LSP clients have been created for IDEs and the [support for new languages is rapidly growing](https://langserver.org/).
 
-Thus,  LSP integration can be seamlessly done in vscode, theia or even more IDEs.
+Thus, LSP integration can be seamlessly done in vscode, theia or even more IDEs.
 
 ## Current implementations
 
@@ -97,9 +97,9 @@ Thus,  LSP integration can be seamlessly done in vscode, theia or even more IDEs
 
 Volar is a [framework](https://volarjs.dev/) designed to simplify the development of language servers using the **@vscode/language-server** package.
 
-It is being used by JetBrains for their IDEs [](https://blog.jetbrains.com/webstorm/2024/04/giving-back-to-the-ecosystem-jetbrains-supports-volar/)
+It is being used by JetBrains for [their IDEs](https://blog.jetbrains.com/webstorm/2024/04/giving-back-to-the-ecosystem-jetbrains-supports-volar/).
 
-Although it offers great simplification, it is too targeted at web development and might not be suitable for our current needs.
+Although it offers great features, it is too targeted at web development and might not be suitable for our current needs.
 
 ```mermaid
 graph LR
@@ -122,6 +122,7 @@ pnpm run preinstall && pnpm install
 
 >[!NOTE]
 > **preinstall** will globally install:
+>
 > -  node-gyp & tree-sitter-cli.
 > -  esbuild & typescript to run the VSC extension.
 > **install** will install local dependencies.
@@ -134,7 +135,9 @@ cd packages/tree-sitter && tree-sitter generate
 
 >[!NOTE]
 > **generate** will generate bindings alongside the c parser file.
+>
 > Current bindings will be overriden!.
+>
 > To avoid this behavior, use ``--no-bindings``.
 
 ### Run the extension
