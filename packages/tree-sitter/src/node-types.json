@@ -73,6 +73,45 @@
     }
   },
   {
+    "type": "add_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "add_operator",
+          "named": true
+        },
+        {
+          "type": "term",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "add_operator",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "and_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "comparison",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "array_initial_element",
     "named": true,
     "fields": {},
@@ -267,6 +306,25 @@
     }
   },
   {
+    "type": "assignment_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "variable",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "binary_integer",
     "named": true,
     "fields": {},
@@ -324,6 +382,86 @@
     "fields": {}
   },
   {
+    "type": "case_element",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "case_list",
+          "named": true
+        },
+        {
+          "type": "statement_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "case_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "case_list_element",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "case_list_element",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "enumerated_value",
+          "named": true
+        },
+        {
+          "type": "signed_integer",
+          "named": true
+        },
+        {
+          "type": "subrange",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "case_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "case_element",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "statement_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "character_string",
     "named": true,
     "fields": {},
@@ -349,6 +487,26 @@
   },
   {
     "type": "common_character_representation",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "comparison",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "equ_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "comparison_operator",
     "named": true,
     "fields": {}
   },
@@ -428,6 +586,21 @@
         },
         {
           "type": "time_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "control_variable",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -979,6 +1152,25 @@
     }
   },
   {
+    "type": "equ_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "add_expression",
+          "named": true
+        },
+        {
+          "type": "comparison_operator",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "exponent",
     "named": true,
     "fields": {},
@@ -988,6 +1180,21 @@
       "types": [
         {
           "type": "integer",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "xor_expression",
           "named": true
         }
       ]
@@ -1042,6 +1249,25 @@
       "types": [
         {
           "type": "external_declaration",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "fb_invocation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "fb_name",
+          "named": true
+        },
+        {
+          "type": "param_assignment",
           "named": true
         }
       ]
@@ -1144,6 +1370,44 @@
       "types": [
         {
           "type": "integer",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "for_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "for_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "control_variable",
+          "named": true
+        },
+        {
+          "type": "for_list",
+          "named": true
+        },
+        {
+          "type": "statement_list",
           "named": true
         }
       ]
@@ -1471,6 +1735,25 @@
     }
   },
   {
+    "type": "if_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "statement_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "incompl_located_var_decl",
     "named": true,
     "fields": {},
@@ -1759,6 +2042,33 @@
     }
   },
   {
+    "type": "iteration_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "exit_statement",
+          "named": true
+        },
+        {
+          "type": "for_statement",
+          "named": true
+        },
+        {
+          "type": "repeat_statement",
+          "named": true
+        },
+        {
+          "type": "while_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "library_element_declaration",
     "named": true,
     "fields": {},
@@ -2009,6 +2319,11 @@
     }
   },
   {
+    "type": "multiply_operator",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "non_generic_type_name",
     "named": true,
     "fields": {},
@@ -2121,6 +2436,79 @@
       "types": [
         {
           "type": "var_init_decl",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "param_assignment",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "variable",
+          "named": true
+        },
+        {
+          "type": "variable_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "power_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "unary_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "primary_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "constant",
+          "named": true
+        },
+        {
+          "type": "enumerated_value",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "function_name",
+          "named": true
+        },
+        {
+          "type": "param_assignment",
+          "named": true
+        },
+        {
+          "type": "variable",
           "named": true
         }
       ]
@@ -2411,6 +2799,25 @@
     }
   },
   {
+    "type": "repeat_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "statement_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "resource_declaration",
     "named": true,
     "fields": {},
@@ -2500,6 +2907,25 @@
         },
         {
           "type": "milliseconds",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "selection_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "case_statement",
+          "named": true
+        },
+        {
+          "type": "if_statement",
           "named": true
         }
       ]
@@ -2794,6 +3220,52 @@
     }
   },
   {
+    "type": "statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "NIL",
+          "named": true
+        },
+        {
+          "type": "assignment_statement",
+          "named": true
+        },
+        {
+          "type": "iteration_statement",
+          "named": true
+        },
+        {
+          "type": "selection_statement",
+          "named": true
+        },
+        {
+          "type": "subprogram_control_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "statement_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "string_type_declaration",
     "named": true,
     "fields": {},
@@ -3072,6 +3544,21 @@
     }
   },
   {
+    "type": "subprogram_control_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "fb_invocation",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "subrange",
     "named": true,
     "fields": {},
@@ -3322,6 +3809,25 @@
     }
   },
   {
+    "type": "term",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "multiply_operator",
+          "named": true
+        },
+        {
+          "type": "power_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "time_literal",
     "named": true,
     "fields": {},
@@ -3389,6 +3895,30 @@
         }
       ]
     }
+  },
+  {
+    "type": "unary_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "primary_expression",
+          "named": true
+        },
+        {
+          "type": "unary_operator",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "unary_operator",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "unsigned_integer_type_name",
@@ -3592,6 +4122,25 @@
     }
   },
   {
+    "type": "variable",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "direct_variable",
+          "named": true
+        },
+        {
+          "type": "symbolic_variable",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "variable_name",
     "named": true,
     "fields": {},
@@ -3601,6 +4150,40 @@
       "types": [
         {
           "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "while_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "statement_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "xor_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "and_expression",
           "named": true
         }
       ]
@@ -3690,6 +4273,10 @@
     "named": false
   },
   {
+    "type": "&",
+    "named": false
+  },
+  {
     "type": "'",
     "named": false
   },
@@ -3714,6 +4301,10 @@
     "named": false
   },
   {
+    "type": "**",
+    "named": false
+  },
+  {
     "type": "+",
     "named": false
   },
@@ -3731,6 +4322,10 @@
   },
   {
     "type": "..",
+    "named": false
+  },
+  {
+    "type": "/",
     "named": false
   },
   {
@@ -3770,7 +4365,35 @@
     "named": false
   },
   {
+    "type": "<",
+    "named": false
+  },
+  {
+    "type": "<=",
+    "named": false
+  },
+  {
+    "type": "<>",
+    "named": false
+  },
+  {
+    "type": "=",
+    "named": false
+  },
+  {
     "type": "=>",
+    "named": false
+  },
+  {
+    "type": ">",
+    "named": false
+  },
+  {
+    "type": ">=",
+    "named": false
+  },
+  {
+    "type": "AND",
     "named": false
   },
   {
@@ -3830,7 +4453,15 @@
     "named": false
   },
   {
+    "type": "BY",
+    "named": false
+  },
+  {
     "type": "BYTE",
+    "named": false
+  },
+  {
+    "type": "CASE",
     "named": false
   },
   {
@@ -3858,6 +4489,10 @@
     "named": false
   },
   {
+    "type": "DO",
+    "named": false
+  },
+  {
     "type": "DT",
     "named": false
   },
@@ -3870,7 +4505,23 @@
     "named": false
   },
   {
+    "type": "ELSE",
+    "named": false
+  },
+  {
+    "type": "ELSIF",
+    "named": false
+  },
+  {
+    "type": "END_CASE",
+    "named": false
+  },
+  {
     "type": "END_CONFIGURATION",
+    "named": false
+  },
+  {
+    "type": "END_FOR",
     "named": false
   },
   {
@@ -3882,7 +4533,15 @@
     "named": false
   },
   {
+    "type": "END_IF",
+    "named": false
+  },
+  {
     "type": "END_PROGRAM",
+    "named": false
+  },
+  {
+    "type": "END_REPEAT",
     "named": false
   },
   {
@@ -3902,7 +4561,15 @@
     "named": false
   },
   {
+    "type": "END_WHILE",
+    "named": false
+  },
+  {
     "type": "FALSE",
+    "named": false
+  },
+  {
+    "type": "FOR",
     "named": false
   },
   {
@@ -3919,6 +4586,10 @@
   },
   {
     "type": "I",
+    "named": false
+  },
+  {
+    "type": "IF",
     "named": false
   },
   {
@@ -3950,6 +4621,14 @@
     "named": false
   },
   {
+    "type": "MOD",
+    "named": false
+  },
+  {
+    "type": "NIL",
+    "named": true
+  },
+  {
     "type": "NIL",
     "named": false
   },
@@ -3958,11 +4637,19 @@
     "named": false
   },
   {
+    "type": "NOT",
+    "named": false
+  },
+  {
     "type": "OF",
     "named": false
   },
   {
     "type": "ON",
+    "named": false
+  },
+  {
+    "type": "OR",
     "named": false
   },
   {
@@ -3990,11 +4677,19 @@
     "named": false
   },
   {
+    "type": "REPEAT",
+    "named": false
+  },
+  {
     "type": "RESOURCE",
     "named": false
   },
   {
     "type": "RETAIN",
+    "named": false
+  },
+  {
+    "type": "RETURN",
     "named": false
   },
   {
@@ -4026,11 +4721,19 @@
     "named": false
   },
   {
+    "type": "THEN",
+    "named": false
+  },
+  {
     "type": "TIME",
     "named": false
   },
   {
     "type": "TIME_OF_DAY",
+    "named": false
+  },
+  {
+    "type": "TO",
     "named": false
   },
   {
@@ -4055,6 +4758,10 @@
   },
   {
     "type": "ULINT",
+    "named": false
+  },
+  {
+    "type": "UNTIL",
     "named": false
   },
   {
@@ -4102,6 +4809,10 @@
     "named": false
   },
   {
+    "type": "WHILE",
+    "named": false
+  },
+  {
     "type": "WITH",
     "named": false
   },
@@ -4115,6 +4826,10 @@
   },
   {
     "type": "X",
+    "named": false
+  },
+  {
+    "type": "XOR",
     "named": false
   },
   {
@@ -4142,7 +4857,7 @@
     "named": false
   },
   {
-    "type": "expression",
+    "type": "exit_statement",
     "named": true
   },
   {

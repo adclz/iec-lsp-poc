@@ -4,6 +4,8 @@
 // Grammar for IEC 61131-2 standard
 // From B.0 Programming model to B.1.7 Configuration elements
 
+const B3 = require("./grammars/B3");
+
 module.exports = grammar({
     name: "IEC61131",
 
@@ -12,6 +14,11 @@ module.exports = grammar({
         /\s/, // Whitespace
         $.single_line_comment,
         $.multi_line_comment
+    ],
+
+    precedences: $ => [
+        [$.signed_integer, $.unary_operator],
+        [$.variable_name, $.enumerated_value]
     ],
 
     conflicts: $ => [
@@ -96,6 +103,12 @@ module.exports = grammar({
             "*)"
           ),
         comment_text: $ => repeat1(choice(/.|\n|\r/)),
+
+        // NIL
+
+        // A second special terminal symbol utilized in this syntax is the "null string", that is, a string
+        // containing no characters. This is represented by the terminal symbol NIL.
+        NIL: $ => token(""),
         
         // B.0 Programming model
 
@@ -128,7 +141,6 @@ module.exports = grammar({
         ),
 
         todo: $ => "TODO",
-        expression: $ => "expression",
 
         // B.1.2 Constants
 
@@ -1122,5 +1134,7 @@ module.exports = grammar({
                 seq($.variable_name, optional($.location), ":", $.located_var_spec_init),
                 seq($.fb_name, ":", $.function_block_type_name, ":=", $.structure_initialization))
         ),
+
+        ...B3.rules
     }
 });
