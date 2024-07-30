@@ -74,6 +74,13 @@
         "value": ""
       }
     },
+    "EOL": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": " "
+      }
+    },
     "library_element_name": {
       "type": "CHOICE",
       "members": [
@@ -5380,6 +5387,793 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    "instruction_list": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "il_instruction"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "il_instruction"
+          }
+        }
+      ]
+    },
+    "il_instruction": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "label"
+                },
+                {
+                  "type": "STRING",
+                  "value": ":"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "il_simple_operation"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "il_expression"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "il_jump_operation"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "il_fb_call"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "il_formal_funct_call"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "il_return_operator"
+              }
+            ]
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "EOL"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "EOL"
+          }
+        }
+      ]
+    },
+    "label": {
+      "type": "SYMBOL",
+      "name": "identifier"
+    },
+    "il_simple_operation": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "il_simple_operator"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "il_operand"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "function_name"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "il_operand_list"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "il_expression": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "il_expr_operator"
+        },
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "il_operand"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "EOL"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "EOL"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "simple_instr_list"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
+    "il_jump_operation": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "il_jump_operator"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "label"
+        }
+      ]
+    },
+    "il_fb_call": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "il_call_operator"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "fb_name"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "["
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "EOL"
+                        },
+                        {
+                          "type": "REPEAT",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "EOL"
+                          }
+                        },
+                        {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "SYMBOL",
+                              "name": "il_param_list"
+                            },
+                            {
+                              "type": "BLANK"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "SYMBOL",
+                              "name": "il_operand_list"
+                            },
+                            {
+                              "type": "BLANK"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "STRING",
+                      "value": ")"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "il_formal_funct_call": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "function_name"
+        },
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "SYMBOL",
+          "name": "EOL"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "EOL"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "il_param_list"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
+    "il_operand": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "constant"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "variable"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "enumerated_value"
+        }
+      ]
+    },
+    "il_operand_list": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "il_operand"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": ","
+              },
+              {
+                "type": "SYMBOL",
+                "name": "il_operand"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "simple_instr_list": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "il_simple_instruction"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "il_simple_instruction"
+          }
+        }
+      ]
+    },
+    "il_simple_instruction": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "il_simple_operation"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "il_expression"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "il_formal_funct_call"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "EOL"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "EOL"
+          }
+        }
+      ]
+    },
+    "il_param_list": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "il_param_assignment"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "il_param_last_instruction"
+        }
+      ]
+    },
+    "il_param_instruction": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "il_param_assignment"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "il_param_out_assignment"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ","
+        },
+        {
+          "type": "SYMBOL",
+          "name": "EOL"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "EOL"
+          }
+        }
+      ]
+    },
+    "il_param_last_instruction": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "il_param_assignment"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "il_param_out_assignment"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "EOL"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "EOL"
+          }
+        }
+      ]
+    },
+    "il_param_assignment": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "il_assign_operator"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "il_operand"
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "EOL"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "EOL"
+                  }
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "simple_instr_list"
+                }
+              ]
+            },
+            {
+              "type": "STRING",
+              "value": ")"
+            }
+          ]
+        }
+      ]
+    },
+    "il_param_out_assignment": {
+      "type": "SYMBOL",
+      "name": "il_assign_out_operator"
+    },
+    "il_simple_operator": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "LD"
+        },
+        {
+          "type": "STRING",
+          "value": "LDN"
+        },
+        {
+          "type": "STRING",
+          "value": "ST"
+        },
+        {
+          "type": "STRING",
+          "value": "STN"
+        },
+        {
+          "type": "STRING",
+          "value": "NOT"
+        },
+        {
+          "type": "STRING",
+          "value": "S"
+        },
+        {
+          "type": "STRING",
+          "value": "R"
+        },
+        {
+          "type": "STRING",
+          "value": "S1"
+        },
+        {
+          "type": "STRING",
+          "value": "R1"
+        },
+        {
+          "type": "STRING",
+          "value": "CLK"
+        },
+        {
+          "type": "STRING",
+          "value": "CU"
+        },
+        {
+          "type": "STRING",
+          "value": "CD"
+        },
+        {
+          "type": "STRING",
+          "value": "PV"
+        },
+        {
+          "type": "STRING",
+          "value": "IN"
+        },
+        {
+          "type": "STRING",
+          "value": "PT"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "il_expr_operator"
+        }
+      ]
+    },
+    "il_expr_operator": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "AND"
+        },
+        {
+          "type": "STRING",
+          "value": "& "
+        },
+        {
+          "type": "STRING",
+          "value": "OR"
+        },
+        {
+          "type": "STRING",
+          "value": "XOR"
+        },
+        {
+          "type": "STRING",
+          "value": "ANDN"
+        },
+        {
+          "type": "STRING",
+          "value": "&N"
+        },
+        {
+          "type": "STRING",
+          "value": "ORN"
+        },
+        {
+          "type": "STRING",
+          "value": "XORN"
+        },
+        {
+          "type": "STRING",
+          "value": "ADD"
+        },
+        {
+          "type": "STRING",
+          "value": "SUB"
+        },
+        {
+          "type": "STRING",
+          "value": "MUL"
+        },
+        {
+          "type": "STRING",
+          "value": "DIV"
+        },
+        {
+          "type": "STRING",
+          "value": "MOD"
+        },
+        {
+          "type": "STRING",
+          "value": "GT"
+        },
+        {
+          "type": "STRING",
+          "value": "GE"
+        },
+        {
+          "type": "STRING",
+          "value": "EQ"
+        },
+        {
+          "type": "STRING",
+          "value": "LT"
+        },
+        {
+          "type": "STRING",
+          "value": "LE"
+        },
+        {
+          "type": "STRING",
+          "value": "NE"
+        }
+      ]
+    },
+    "il_assign_operator": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "variable_name"
+        },
+        {
+          "type": "STRING",
+          "value": ":="
+        }
+      ]
+    },
+    "il_assign_out_operator": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "NOT"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "variable_name"
+        },
+        {
+          "type": "STRING",
+          "value": "=>"
+        }
+      ]
+    },
+    "il_call_operator": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "CALL"
+        },
+        {
+          "type": "STRING",
+          "value": "CALC"
+        },
+        {
+          "type": "STRING",
+          "value": "CALCN"
+        }
+      ]
+    },
+    "il_return_operator": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "RET"
+        },
+        {
+          "type": "STRING",
+          "value": "RETC"
+        },
+        {
+          "type": "STRING",
+          "value": "RETCN"
+        }
+      ]
+    },
+    "il_jump_operator": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "JMP"
+        },
+        {
+          "type": "STRING",
+          "value": "JMPC"
+        },
+        {
+          "type": "STRING",
+          "value": "JMPCN"
         }
       ]
     },

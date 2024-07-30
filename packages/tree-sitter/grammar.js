@@ -4,6 +4,7 @@
 // Grammar for IEC 61131-2 standard
 // From B.0 Programming model to B.1.7 Configuration elements
 
+const B2 = require("./grammars/B2");
 const B3 = require("./grammars/B3");
 
 module.exports = grammar({
@@ -104,11 +105,13 @@ module.exports = grammar({
           ),
         comment_text: $ => repeat1(choice(/.|\n|\r/)),
 
-        // NIL
-
         // A second special terminal symbol utilized in this syntax is the "null string", that is, a string
         // containing no characters. This is represented by the terminal symbol NIL.
         NIL: $ => token(""),
+
+        // This symbol shall normally consist of the "paragraph
+        // separator" character defined as hexadecimal code 2029 by ISO/IEC 10646
+        EOL: $ => token("\u2029"),
         
         // B.0 Programming model
 
@@ -1135,6 +1138,7 @@ module.exports = grammar({
                 seq($.fb_name, ":", $.function_block_type_name, ":=", $.structure_initialization))
         ),
 
+        ...B2.rules,
         ...B3.rules
     }
 });
