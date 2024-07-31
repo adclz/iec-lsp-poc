@@ -26,6 +26,7 @@ export type GlobalState = {
 
 connection.onInitialize(async (params: InitializeParams) => {
   const result: InitializeResult = {
+    multilineTokenSupport: false,
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Incremental,
       semanticTokensProvider: {
@@ -33,8 +34,9 @@ connection.onInitialize(async (params: InitializeParams) => {
           tokenTypes,
           tokenModifiers: [],
         },
-        full: true,
-      }
+        range: true,
+        full: false
+      },
     }
   };
 
@@ -75,7 +77,8 @@ connection.onInitialize(async (params: InitializeParams) => {
     connection.sendDiagnostics(validateTextDocument(GlobalState, updated, tree, change))
   });
 
-  connection.onRequest("textDocument/semanticTokens/full", semanticTokensProvider(documents, parser, queries))
+  const semanticTokens =  semanticTokensProvider(GlobalState, parser, queries)
+  connection.onRequest("textDocument/semanticTokens/range", semanticTokens.rangeHandler)
 
   return result;
 });

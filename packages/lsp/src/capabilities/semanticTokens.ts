@@ -1,7 +1,8 @@
 import Parser from "tree-sitter";
-import { SemanticTokens, SemanticTokensRequest } from "vscode-languageserver";
+import { SemanticTokens, SemanticTokensRequest, SemanticTokensRangeRequest } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Queries } from "../parser/queries";
+import { GlobalState } from "../server";
 
 export const tokenTypes = [
     'comment',
@@ -19,14 +20,14 @@ export const tokenTypes = [
     'variable.parameter'
 ];
 
-const semanticTokensProvider = (documents: Map<string, TextDocument>, parser: Parser, queries: Queries) => {
-    const handler: SemanticTokensRequest.HandlerSignature = (params) => {
-        const document = documents.get(params.textDocument.uri);
-        if (!document) {
+const semanticTokensProvider = (globalState: GlobalState, parser: Parser, queries: Queries) => {
+    const fullHandler: SemanticTokensRequest.HandlerSignature = (params) => {
+        //console.log('fullHandler', params);
+        const tree = globalState.trees.get(params.textDocument.uri);
+        if (!tree) {
             return { data: [] };
         }
 
-        const tree = parser.parse(document.getText());
         const captures = queries.semanticTokens.captures(tree.rootNode);
         const builder = new SemanticTokensBuilder();
 
@@ -47,7 +48,48 @@ const semanticTokensProvider = (documents: Map<string, TextDocument>, parser: Pa
         })
         return builder.build();
     }
-    return handler
+
+    const rangeHandler: SemanticTokensRangeRequest.HandlerSignature = (params) => {
+        //console.log('rangeHandler', params);
+        const tree = globalState.trees.get(params.textDocument.uri);
+        if (!tree) {
+            return { data: [] };
+        }
+
+        const { start, end } = params.range;
+        const captures = queries.semanticTokens.captures(tree.rootNode);
+        const builder = new SemanticTokensBuilder();
+
+        captures.forEach((capture) => {
+            const tokenTypeIndex = tokenTypes.indexOf(capture.name);
+            if (tokenTypeIndex === -1) {
+                return;
+            }
+
+            const { startPosition, endPosition } = capture.node;
+
+            // Check if the capture node is within the specified range
+            if (
+                (startPosition.row > start.line || (startPosition.row === start.line && startPosition.column >= start.character)) &&
+                (endPosition.row < end.line || (endPosition.row === end.line && endPosition.column <= end.character))
+            ) {
+                builder.push(
+                    startPosition.row,
+                    startPosition.column,
+                    endPosition.column - startPosition.column,
+                    tokenTypeIndex,
+                    0
+                );
+            }
+        });
+
+        return builder.build();
+    }
+
+    return {
+        fullHandler,
+        rangeHandler
+    }
 }
 
 
@@ -100,23 +142,6 @@ class SemanticTokensBuilder {
             data: this._data,
         };
     }
-}
-
-type SemanticToken = [
-    line: number,
-    character: number,
-    length: number,
-    tokenTypes: number,
-    tokenModifiers: number,
-]
-
-function buildTokens(tokens: SemanticToken[]) {
-    const builder = new SemanticTokensBuilder();
-    const sortedTokens = tokens.sort((a, b) => a[0] - b[0] === 0 ? a[1] - b[1] : a[0] - b[0]);
-    for (const token of sortedTokens) {
-        builder.push(...token);
-    }
-    return builder.build();
 }
 
 export default semanticTokensProvider
