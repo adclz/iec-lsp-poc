@@ -1422,7 +1422,11 @@
       "required": true,
       "types": [
         {
-          "type": "todo",
+          "type": "instruction_list",
+          "named": true
+        },
+        {
+          "type": "statement_list",
           "named": true
         }
       ]
@@ -1483,7 +1487,11 @@
       "required": true,
       "types": [
         {
-          "type": "todo",
+          "type": "instruction_list",
+          "named": true
+        },
+        {
+          "type": "statement_list",
           "named": true
         }
       ]
@@ -2301,6 +2309,21 @@
       "types": [
         {
           "type": "instance_specific_init",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "instruction_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "il_instruction",
           "named": true
         }
       ]

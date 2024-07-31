@@ -87,7 +87,8 @@ module.exports = grammar({
         [$.enumerated_spec_init, $.var1_declaration],
         [$.array_spec_init, $.array_var_declaration],
         [$.elementary_type_name, $.var_spec],
-        [$.standard_function_name, $.standard_function_block_name]
+        [$.standard_function_name, $.standard_function_block_name],
+        [$.fb_name, $.derived_function_name]
     ],
 
     rules: {
@@ -915,8 +916,11 @@ module.exports = grammar({
             "END_VAR"
         ),
 
-        // TODO Add function bodies
-        function_body: $ => $.todo,
+        // TODO Add support for more languages
+        function_body: $ => choice(
+    $.instruction_list,
+                $.statement_list
+        ),
 
         var2_init_decl: $ => choice(
             $.var1_init_decl,
@@ -965,8 +969,11 @@ module.exports = grammar({
             "END_VAR"
         ),
 
-        // TODO Add function block bodies
-        function_block_body: $ => $.todo,
+        // TODO Add support for more languages
+        function_block_body: $ => choice(
+            $.instruction_list,
+            $.statement_list
+        ),
 
         // B.1.5.3 Programs
 

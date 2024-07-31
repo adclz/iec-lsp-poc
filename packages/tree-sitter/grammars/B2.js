@@ -9,7 +9,7 @@ module.exports = {
     rules: {
         instruction_list: $ => seq($.il_instruction, repeat($.il_instruction)),
 
-        il_instruction: $ => seq(
+        il_instruction: $ => prec.left(seq(
             optional(seq($.label, ":")),
             repeat(
                 choice(
@@ -22,14 +22,14 @@ module.exports = {
                 )),
             $.EOL,
             repeat($.EOL)
-        ),
+        )),
 
         label: $ => $.identifier,
 
-        il_simple_operation: $ => choice(
+        il_simple_operation: $ => prec.right(choice(
             seq($.il_simple_operator, optional($.il_operand)),
             seq($.function_name, optional($.il_operand_list))
-        ),
+        )),
 
         il_expression: $ => seq(
             $.il_expr_operator,
@@ -39,7 +39,7 @@ module.exports = {
 
         il_jump_operation: $ => seq($.il_jump_operator, $.label),
 
-        il_fb_call: $ => seq(
+        il_fb_call: $ => prec.left(seq(
             $.il_call_operator,
             $.fb_name,
             optional(
@@ -50,7 +50,7 @@ module.exports = {
                         ")"
                     ))
             )
-        ),
+        )),
 
         il_formal_funct_call: $ => seq(
             $.function_name,
@@ -64,15 +64,15 @@ module.exports = {
             repeat(seq(",", $.il_operand))
         ),
 
-        simple_instr_list: $ => seq(
+        simple_instr_list: $ => prec.right(seq(
             $.il_simple_instruction,
             repeat($.il_simple_instruction)
-        ),
+        )),
 
-        il_simple_instruction: $ => seq(
+        il_simple_instruction: $ => prec.right(seq(
             choice($.il_simple_operation, $.il_expression, $.il_formal_funct_call),
             $.EOL, repeat($.EOL)
-        ),
+        )),
 
         il_param_list: $ => seq(
             repeat($.il_param_assignment),
@@ -84,10 +84,10 @@ module.exports = {
             $.EOL, repeat($.EOL)
         ),
 
-        il_param_last_instruction: $ => seq(
+        il_param_last_instruction: $ => prec.right(seq(
             choice($.il_param_assignment, $.il_param_out_assignment),
             $.EOL, repeat($.EOL)
-        ),
+        )),
 
         il_param_assignment: $ => seq(
             $.il_assign_operator,

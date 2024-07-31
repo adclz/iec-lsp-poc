@@ -4171,8 +4171,17 @@
       ]
     },
     "function_body": {
-      "type": "SYMBOL",
-      "name": "todo"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "instruction_list"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "statement_list"
+        }
+      ]
     },
     "var2_init_decl": {
       "type": "CHOICE",
@@ -4357,8 +4366,17 @@
       ]
     },
     "function_block_body": {
-      "type": "SYMBOL",
-      "name": "todo"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "instruction_list"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "statement_list"
+        }
+      ]
     },
     "program_type_name": {
       "type": "SYMBOL",
@@ -5407,124 +5425,132 @@
       ]
     },
     "il_instruction": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "label"
-                },
-                {
-                  "type": "STRING",
-                  "value": ":"
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
             "type": "CHOICE",
             "members": [
               {
-                "type": "SYMBOL",
-                "name": "il_simple_operation"
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "label"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": ":"
+                  }
+                ]
               },
               {
-                "type": "SYMBOL",
-                "name": "il_expression"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "il_jump_operation"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "il_fb_call"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "il_formal_funct_call"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "il_return_operator"
+                "type": "BLANK"
               }
             ]
-          }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "EOL"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "il_simple_operation"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "il_expression"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "il_jump_operation"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "il_fb_call"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "il_formal_funct_call"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "il_return_operator"
+                }
+              ]
+            }
+          },
+          {
             "type": "SYMBOL",
             "name": "EOL"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "EOL"
+            }
           }
-        }
-      ]
+        ]
+      }
     },
     "label": {
       "type": "SYMBOL",
       "name": "identifier"
     },
     "il_simple_operation": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "il_simple_operator"
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "il_operand"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "function_name"
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "il_operand_list"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "il_simple_operator"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "il_operand"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "function_name"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "il_operand_list"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     "il_expression": {
       "type": "SEQ",
@@ -5592,92 +5618,96 @@
       ]
     },
     "il_fb_call": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "il_call_operator"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "fb_name"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "("
-                },
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "STRING",
-                          "value": "["
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "EOL"
-                        },
-                        {
-                          "type": "REPEAT",
-                          "content": {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "il_call_operator"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "fb_name"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "("
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "["
+                          },
+                          {
                             "type": "SYMBOL",
                             "name": "EOL"
+                          },
+                          {
+                            "type": "REPEAT",
+                            "content": {
+                              "type": "SYMBOL",
+                              "name": "EOL"
+                            }
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "SYMBOL",
+                                "name": "il_param_list"
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
                           }
-                        },
-                        {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "SYMBOL",
-                              "name": "il_param_list"
-                            },
-                            {
-                              "type": "BLANK"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "SYMBOL",
-                              "name": "il_operand_list"
-                            },
-                            {
-                              "type": "BLANK"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ")"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        }
-      ]
+                        ]
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "SYMBOL",
+                                "name": "il_operand_list"
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "STRING",
+                        "value": ")"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        ]
+      }
     },
     "il_formal_funct_call": {
       "type": "SEQ",
@@ -5762,53 +5792,61 @@
       ]
     },
     "simple_instr_list": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "il_simple_instruction"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
             "type": "SYMBOL",
             "name": "il_simple_instruction"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "il_simple_instruction"
+            }
           }
-        }
-      ]
+        ]
+      }
     },
     "il_simple_instruction": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "il_simple_operation"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "il_expression"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "il_formal_funct_call"
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "EOL"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "il_simple_operation"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "il_expression"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "il_formal_funct_call"
+              }
+            ]
+          },
+          {
             "type": "SYMBOL",
             "name": "EOL"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "EOL"
+            }
           }
-        }
-      ]
+        ]
+      }
     },
     "il_param_list": {
       "type": "SEQ",
@@ -5860,33 +5898,37 @@
       ]
     },
     "il_param_last_instruction": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "il_param_assignment"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "il_param_out_assignment"
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "EOL"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "il_param_assignment"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "il_param_out_assignment"
+              }
+            ]
+          },
+          {
             "type": "SYMBOL",
             "name": "EOL"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "EOL"
+            }
           }
-        }
-      ]
+        ]
+      }
     },
     "il_param_assignment": {
       "type": "SEQ",
@@ -6556,33 +6598,37 @@
       ]
     },
     "statement_list": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "statement"
-        },
-        {
-          "type": "STRING",
-          "value": ";"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "statement"
-              },
-              {
-                "type": "STRING",
-                "value": ";"
-              }
-            ]
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "statement"
+          },
+          {
+            "type": "STRING",
+            "value": ";"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "statement"
+                },
+                {
+                  "type": "STRING",
+                  "value": ";"
+                }
+              ]
+            }
           }
-        }
-      ]
+        ]
+      }
     },
     "statement": {
       "type": "CHOICE",
@@ -7254,6 +7300,10 @@
     [
       "standard_function_name",
       "standard_function_block_name"
+    ],
+    [
+      "fb_name",
+      "derived_function_name"
     ]
   ],
   "precedences": [

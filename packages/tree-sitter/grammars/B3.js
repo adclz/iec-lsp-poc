@@ -71,10 +71,10 @@ module.exports = {
 
         // B.3.2 Statements
 
-        statement_list: $ => seq(
+        statement_list: $ => prec.right(seq(
             $.statement, ";",
             repeat(seq($.statement, ";"))
-        ),
+        )),
 
         statement: $ => choice(
             $.NIL,
