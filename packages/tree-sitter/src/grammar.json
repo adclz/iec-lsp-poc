@@ -135,19 +135,19 @@
         }
       ]
     },
-    "letter": {
+    "_letter": {
       "type": "PATTERN",
       "value": "[a-zA-Z]"
     },
-    "digit": {
+    "_digit": {
       "type": "PATTERN",
       "value": "\\d"
     },
-    "octal_digit": {
+    "_octal_digit": {
       "type": "PATTERN",
       "value": "[0-7]"
     },
-    "hex_digit": {
+    "_hex_digit": {
       "type": "PATTERN",
       "value": "[0-9a-fA-F]"
     },
@@ -159,7 +159,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "letter"
+              "name": "_letter"
             },
             {
               "type": "SEQ",
@@ -173,11 +173,11 @@
                   "members": [
                     {
                       "type": "SYMBOL",
-                      "name": "letter"
+                      "name": "_letter"
                     },
                     {
                       "type": "SYMBOL",
-                      "name": "digit"
+                      "name": "_digit"
                     }
                   ]
                 }
@@ -207,11 +207,11 @@
                 "members": [
                   {
                     "type": "SYMBOL",
-                    "name": "letter"
+                    "name": "_letter"
                   },
                   {
                     "type": "SYMBOL",
-                    "name": "digit"
+                    "name": "_digit"
                   }
                 ]
               }
@@ -347,7 +347,7 @@
           "value": 1,
           "content": {
             "type": "SYMBOL",
-            "name": "digit"
+            "name": "_digit"
           }
         },
         {
@@ -372,7 +372,7 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "digit"
+                  "name": "_digit"
                 }
               ]
             }
@@ -439,7 +439,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "octal_digit"
+          "name": "_octal_digit"
         },
         {
           "type": "REPEAT",
@@ -460,7 +460,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "octal_digit"
+                "name": "_octal_digit"
               }
             ]
           }
@@ -476,7 +476,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "hex_digit"
+          "name": "_hex_digit"
         },
         {
           "type": "REPEAT",
@@ -497,7 +497,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "hex_digit"
+                "name": "_hex_digit"
               }
             ]
           }
@@ -801,11 +801,11 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "hex_digit"
+                  "name": "_hex_digit"
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "hex_digit"
+                  "name": "_hex_digit"
                 }
               ]
             }
@@ -840,19 +840,19 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "hex_digit"
+                  "name": "_hex_digit"
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "hex_digit"
+                  "name": "_hex_digit"
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "hex_digit"
+                  "name": "_hex_digit"
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "hex_digit"
+                  "name": "_hex_digit"
                 }
               ]
             }

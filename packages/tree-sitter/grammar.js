@@ -135,13 +135,13 @@ module.exports = grammar({
 
         // B.1 Common elements
 
-        letter: $ => /[a-zA-Z]/,
-        digit: $ => /\d/,
-        octal_digit: $ => /[0-7]/,
-        hex_digit: $ => /[0-9a-fA-F]/,
+        _letter: $ => /[a-zA-Z]/,
+        _digit: $ => /\d/,
+        _octal_digit: $ => /[0-7]/,
+        _hex_digit: $ => /[0-9a-fA-F]/,
         identifier: $ => seq(
-          choice($.letter, seq("_", choice($.letter, $.digit))),
-            repeat(seq(optional("_"), choice($.letter, $.digit)))
+          choice($._letter, seq("_", choice($._letter, $._digit))),
+            repeat(seq(optional("_"), choice($._letter, $._digit)))
         ),
 
         todo: $ => "TODO",
@@ -177,8 +177,8 @@ module.exports = grammar({
         ),
 
         integer: $ => seq(
-            prec(1, $.digit),
-            prec.left(2, repeat(seq(optional("_"), $.digit)))
+            prec(1, $._digit),
+            prec.left(2, repeat(seq(optional("_"), $._digit)))
         ),
 
         binary_integer: $ => seq(
@@ -191,14 +191,14 @@ module.exports = grammar({
 
         octal_integer: $ => seq(
             "8#",
-            $.octal_digit,
-            repeat(seq(optional("_"), $.octal_digit))
+            $._octal_digit,
+            repeat(seq(optional("_"), $._octal_digit))
         ),
 
         hex_integer: $ => seq(
             "16#",
-            $.hex_digit,
-            repeat(seq(optional("_"), $.hex_digit))
+            $._hex_digit,
+            repeat(seq(optional("_"), $._hex_digit))
         ),
 
         real_literal: $ => seq(
@@ -244,12 +244,12 @@ module.exports = grammar({
 
         single_byte_character_representation: $ => seq(
             $.common_character_representation,
-            choice("$'", '"', seq('$', $.hex_digit, $.hex_digit))
+            choice("$'", '"', seq('$', $._hex_digit, $._hex_digit))
         ),
 
         double_byte_character_representation: $ => seq(
             $.common_character_representation,
-            choice('$"', "'", seq('$', $.hex_digit, $.hex_digit, $.hex_digit, $.hex_digit))
+            choice('$"', "'", seq('$', $._hex_digit, $._hex_digit, $._hex_digit, $._hex_digit))
         ),
 
         common_character_representation: $ => choice(

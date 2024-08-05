@@ -944,15 +944,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "common_character_representation",
-          "named": true
-        },
-        {
-          "type": "hex_digit",
           "named": true
         }
       ]
@@ -1688,17 +1684,7 @@
   {
     "type": "hex_integer",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "hex_digit",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "hours",
@@ -1726,21 +1712,7 @@
   {
     "type": "identifier",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "digit",
-          "named": true
-        },
-        {
-          "type": "letter",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "if_statement",
@@ -2332,17 +2304,7 @@
   {
     "type": "integer",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "digit",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "integer_literal",
@@ -2805,17 +2767,7 @@
   {
     "type": "octal_integer",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "octal_digit",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "other_var_declarations",
@@ -3465,15 +3417,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "common_character_representation",
-          "named": true
-        },
-        {
-          "type": "hex_digit",
           "named": true
         }
       ]
@@ -5442,10 +5390,6 @@
     "named": false
   },
   {
-    "type": "digit",
-    "named": true
-  },
-  {
     "type": "e",
     "named": false
   },
@@ -5458,24 +5402,12 @@
     "named": false
   },
   {
-    "type": "hex_digit",
-    "named": true
-  },
-  {
-    "type": "letter",
-    "named": true
-  },
-  {
     "type": "m",
     "named": false
   },
   {
     "type": "ms",
     "named": false
-  },
-  {
-    "type": "octal_digit",
-    "named": true
   },
   {
     "type": "s",
