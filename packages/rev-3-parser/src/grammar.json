@@ -9946,7 +9946,7 @@
       "members": [
         {
           "type": "STRING",
-          "value": "WHilE"
+          "value": "WHILE"
         },
         {
           "type": "SYMBOL",
@@ -9962,7 +9962,7 @@
         },
         {
           "type": "STRING",
-          "value": "END_WHilE"
+          "value": "END_WHILE"
         }
       ]
     },
@@ -9979,7 +9979,7 @@
         },
         {
           "type": "STRING",
-          "value": "UNTil"
+          "value": "UNTIL"
         },
         {
           "type": "SYMBOL",

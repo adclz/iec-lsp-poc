@@ -1950,17 +1950,17 @@ module.exports = grammar({
         ),
 
         while_stmt: $ => seq(
-            'WHilE',
+            'WHILE',
             $.expression,
             'DO',
             $.stmt_list,
-            'END_WHilE'
+            'END_WHILE'
         ),
 
         repeat_stmt: $ => seq(
             'REPEAT',
             $.stmt_list,
-            'UNTil',
+            'UNTIL',
             $.expression,
             'END_REPEAT'
         ),

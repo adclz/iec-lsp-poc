@@ -6393,7 +6393,7 @@
     "named": false
   },
   {
-    "type": "END_WHilE",
+    "type": "END_WHILE",
     "named": false
   },
   {
@@ -6973,7 +6973,7 @@
     "named": false
   },
   {
-    "type": "UNTil",
+    "type": "UNTIL",
     "named": false
   },
   {
@@ -7029,7 +7029,7 @@
     "named": false
   },
   {
-    "type": "WHilE",
+    "type": "WHILE",
     "named": false
   },
   {
