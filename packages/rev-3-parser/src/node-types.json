@@ -871,6 +871,33 @@
     }
   },
   {
+    "type": "config_decl",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "config_name",
+          "named": true
+        },
+        {
+          "type": "global_var_decls",
+          "named": true
+        },
+        {
+          "type": "resource_decl",
+          "named": true
+        },
+        {
+          "type": "single_resource_decl",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "config_inst_init",
     "named": true,
     "fields": {},
@@ -3253,11 +3280,6 @@
     }
   },
   {
-    "type": "letter",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "loc_partly_var",
     "named": true,
     "fields": {},
@@ -4050,6 +4072,49 @@
     }
   },
   {
+    "type": "prog_decl",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "fb_body",
+          "named": true
+        },
+        {
+          "type": "func_var_decls",
+          "named": true
+        },
+        {
+          "type": "io_var_decls",
+          "named": true
+        },
+        {
+          "type": "loc_var_decls",
+          "named": true
+        },
+        {
+          "type": "other_var_decls",
+          "named": true
+        },
+        {
+          "type": "prog_access_decl",
+          "named": true
+        },
+        {
+          "type": "prog_type_name",
+          "named": true
+        },
+        {
+          "type": "temp_var_decls",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "prog_name",
     "named": true,
     "fields": {},
@@ -4368,7 +4433,7 @@
           "named": true
         },
         {
-          "type": "ressource_type_name",
+          "type": "resource_type_name",
           "named": true
         },
         {
@@ -4394,7 +4459,7 @@
     }
   },
   {
-    "type": "ressource_type_name",
+    "type": "resource_type_name",
     "named": true,
     "fields": {},
     "children": {
@@ -4689,6 +4754,45 @@
         },
         {
           "type": "task_config",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "config_decl",
+          "named": true
+        },
+        {
+          "type": "data_type_decl",
+          "named": true
+        },
+        {
+          "type": "enum_type_decl",
+          "named": true
+        },
+        {
+          "type": "fb_decl",
+          "named": true
+        },
+        {
+          "type": "func_decl",
+          "named": true
+        },
+        {
+          "type": "namespace_decl",
+          "named": true
+        },
+        {
+          "type": "prog_decl",
           "named": true
         }
       ]
@@ -7158,6 +7262,10 @@
   },
   {
     "type": "ld_rung",
+    "named": true
+  },
+  {
+    "type": "letter",
     "named": true
   },
   {

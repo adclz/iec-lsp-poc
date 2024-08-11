@@ -11,7 +11,85 @@ module.exports = grammar({
         $.EOL,
     ],
 
+    precedences: $ => [
+        // string type name > byte string access
+        [$.string_type_name, $.s_byte_str_spec, $.d_byte_str_spec],
+        // solve $.fb_body ambiguity since tree sitter could mistake a std_name with a il or st keyword
+        // in this case, tree sitter will first check if a keyword exists and then check std func name
+        [$.il_expr_operator, $.il_simple_operator, $.std_func_name],
+        [$.il_label, $.access_name],
+
+        [$.std_func_name, $.unary_expr],
+        [$.int_literal, $.bit_str_literal],
+
+    ],
+
+    conflicts: $ => [
+
+        [$.signed_int, $.bit_str_literal],
+        [$.signed_int],
+
+        // ambiguity in PROGRAM declaration
+        [$.class_name, $.namespace_name, $.variable_name],
+        [$.class_name, $.namespace_name],
+        [$.derived_func_name, $.method_name],
+        [$.fb_name, $.derived_func_name, $.class_name],
+        [$.variable_name, $.ref_name],
+        [$.variable_name, $.fb_name],
+        [$.variable_name, $.namespace_name],
+        [$.variable_name, $.class_name],
+        [$.fb_name, $.class_name],
+        [$.derived_fb_name, $.class_type_name],
+        [$.array_elem_init_value, $.primary_expr],
+        [$.struct_elem_init, $.primary_expr],
+        [$.string_type_name, $.var_spec],
+
+        // local variable declarations
+        [$.var_decls, $.loc_var_decls],
+        [$.var_decls, $.loc_var_decls, $.loc_partly_var_decl],
+        [$.var_decls, $.loc_partly_var_decl],
+
+        [$.retain_var_decls, $.loc_var_decls, $.loc_partly_var_decl],
+        [$.retain_var_decls, $.loc_partly_var_decl],
+        [$.no_retain_var_decls, $.loc_var_decls, $.loc_partly_var_decl],
+        [$.no_retain_var_decls, $.loc_partly_var_decl],
+
+        // ambiguity in NAMESPACE declaration
+        [$.simple_type_name, $.subrange_type_name, $.enum_type_name, $.array_type_name, $.struct_type_name, $.ref_type_name, $.class_type_name, $.interface_type_name],
+        [$.simple_type_name, $.subrange_type_name, $.enum_type_name, $.array_type_name, $.struct_type_name, $.ref_type_name, $.interface_type_name],
+        [$.simple_type_name, $.subrange_type_name, $.enum_type_name, $.array_type_name, $.struct_type_name, $.ref_type_name],
+        [$.simple_type_name, $.subrange_type_name, $.enum_type_name, $.array_type_name, $.struct_type_name],
+        [$.simple_type_name, $.array_type_name, $.struct_type_name, $.ref_type_name, $.derived_fb_name],
+        [$.simple_type_name, $.array_type_name, $.struct_type_name, $.derived_fb_name],
+        [$.simple_type_name, $.array_type_name, $.struct_type_name],
+        [$.simple_type_name, $.interface_type_name],
+        [$.elem_type_name, $.string_type_access],
+        [$.enum_spec_init, $.enum_value_spec],
+        [$.array_type_name, $.struct_type_name],
+        [$.numeric_literal, $.enum_value_spec],
+
+        // ambiguity in CONFIGURATION declaration
+        [$.global_var_name, $.resource_name, $.prog_name],
+        [$.global_var_name, $.resource_name],
+        [$.global_var_name, $.enum_value],
+    ],
+
     rules: {
+        // Source file declaration
+        source_file : $ => repeat(
+            choice(
+                $.config_decl, // Declaration of CONFIGURATION and RESOURCE
+                $.prog_decl, // Declaration of PROGRAM
+                $.namespace_decl, // Declaration of NAMESPACE (including all other declarations)
+
+                // To ensure inter-operability with rev 2, we also add all declarations without namespace
+                $.fb_decl, // Declaration of FUNCTION_BLOCK
+                $.func_decl, // Declaration of FUNCTION
+                $.enum_type_decl, // Declaration of ENUM
+                $.data_type_decl, // Declaration of TYPE
+            )
+        ),
+
         // Table 1 - Character sets
         // Table 2 - Identifiers
 
@@ -20,10 +98,10 @@ module.exports = grammar({
         bit: $ => /[01]/,
         octal_digit: $ => /[0-7]/,
         hex_digit: $ => /[0-9a-fA-F]/,
-        identifier: $ => seq(
+        identifier: $ => prec.left(seq(
             $.letter,
             repeat(choice($.letter, $.digit))
-        ),
+        )),
 
         // Table 3 - Comments 
 
@@ -193,10 +271,10 @@ module.exports = grammar({
             $.interval
         ),
 
-        fix_point: $ => seq(
+        fix_point: $ => prec.left(seq(
             $.unsigned_int,
             optional(seq('.', $.unsigned_int))
-        ),
+        )),
 
         interval: $ => choice(
             $.days,
@@ -644,13 +722,13 @@ module.exports = grammar({
 
         // Table 16 - Directly represented variables 
 
-        direct_variable: $ => seq(
+        direct_variable: $ => prec.left(seq(
             '%',
             choice('I', 'Q', 'M'),
             optional(choice('X', 'B', 'W', 'D', 'L')),
             $.unsigned_int,
             repeat(seq('.', $.unsigned_int))
-        ),
+        )),
 
         // Table 12 - Reference operations 
 
@@ -706,22 +784,22 @@ module.exports = grammar({
 
         variable: $ => choice($.direct_variable, $.symbolic_variable),
 
-        symbolic_variable: $ => seq(
+        symbolic_variable: $ => prec.right(seq(
             optional(choice(
                 seq('THIS', '.'),
                 repeat1(seq($.namespace_name, '.'))
             )),
             choice($.var_access, $.multi_elem_var)
-        ),
+        )),
 
         var_access: $ => choice($.variable_name, $.ref_deref),
 
         variable_name: $ => $.identifier,
 
-        multi_elem_var: $ => seq(
+        multi_elem_var: $ => prec.left(seq(
             $.var_access,
             repeat1(choice($.subscript_list, $.struct_variable))
-        ),
+        )),
 
         subscript_list: $ => seq(
             '[',
@@ -1367,7 +1445,7 @@ module.exports = grammar({
 
         config_name: $ => $.identifier,
 
-        ressource_type_name: $ => $.identifier,
+        resource_type_name: $ => $.identifier,
 
         config_decl: $ => seq(
             'CONFIGURATION',
@@ -1381,7 +1459,7 @@ module.exports = grammar({
             'RESOURCE',
             $.resource_name,
             'ON',
-            $.ressource_type_name,
+            $.resource_type_name,
             optional($.global_var_decls),
             $.single_resource_decl,
             'END_RESOURCE'
@@ -1582,7 +1660,7 @@ module.exports = grammar({
             repeat1($.il_instruction),
         ),
 
-        il_instruction: $ => seq(
+        il_instruction: $ => prec.left(seq(
             optional(seq($.il_label, ':')),
             optional(choice(
                 $.il_simple_operation,
@@ -1593,7 +1671,7 @@ module.exports = grammar({
                 $.il_return_operator
             )),
             repeat1($.EOL)
-        ),
+        )),
 
         il_simple_inst: $ => choice(
             $.il_simple_operation,
@@ -1828,11 +1906,11 @@ module.exports = grammar({
             ')'
         ),
 
-        // note: IEC does not specificy at least one occurence of a statement in a statement list
+        // note: IEC does not specify at least one occurence of a statement in a statement list
         // but since tree sitter does not support empty string, we have to add at least one statement.
-        stmt_list: $ => repeat1(
+        stmt_list: $ => prec.left(repeat1(
             seq(optional($.stmt), ';')
-        ),
+        )),
 
         stmt: $ => choice(
             $.assign_stmt,
@@ -1967,7 +2045,7 @@ module.exports = grammar({
 
         // Table 73 - 76 - Graphic languages elements 
 
-        // note: IEC does not specificy at least one occurence of a statement in a ladder diagram
+        // note: IEC does not specify at least one occurence of a statement in a ladder diagram
         // but since tree sitter does not support empty string, we have to add at least one rung.
         ladder_diagram: $ => repeat1(
             $.ld_rung,
