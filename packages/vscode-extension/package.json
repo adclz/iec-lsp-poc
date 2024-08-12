@@ -21,6 +21,27 @@
       }
     ],
     "main": "./dist/extension.js",
+    "contributes": {
+      "languages": [
+        {
+          "id": "st",
+          "aliases": [
+            "st"
+          ],
+          "extensions": [
+            ".st"
+          ],
+          "configuration": "./language-configuration.json"
+        }
+      ],
+      "grammars": [
+        {
+          "language": "st",
+          "scopeName": "source.st",
+          "path": "./syntaxes/st.tmGrammar.json"
+        }
+      ]
+    },
     "scripts": {
       "vscode:prepublish": "pnpm run package",
       "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
