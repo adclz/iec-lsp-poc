@@ -18,6 +18,45 @@ export type change = {
     text: string
 };
 
+const getErrorNodes = (node: Parser.SyntaxNode) => {
+    const errors: Parser.SyntaxNode[] = []
+    const findError = (node: Parser.SyntaxNode) => {
+        node.children.forEach(child => {
+            if (child.isError || child.isMissing)
+                errors.push(child)
+            if (child.hasError)
+                findError(child)
+        })
+    }
+    findError(node)
+    return errors
+}
+
+const formatError = (node: Parser.SyntaxNode): Diagnostic => {
+    const range = {
+        start: {
+            line: node.startPosition.row,
+            character: node.startPosition.column,
+        },
+        end: {
+            line: node.endPosition.row,
+            character: node.endPosition.column,
+        }
+    }
+    if (node.hasError && node.isMissing) {
+        return {
+            range,
+            message: `Syntax error: ${node.toString()}`,
+        }
+    }
+    else {
+        return {
+            range,
+            message: `Unexpected token(s) '${node.children.map(n => n.text).join(" ")}'`,
+        }
+    }
+}
+
 export const validateTextDocument = (
     globals: GlobalState,
     updated: TextDocument,
@@ -46,30 +85,7 @@ export const validateTextDocument = (
     const newTree = globals.parser.parse(updated.getText(), tree);
     globals.trees.set(updated.uri, newTree);
 
-    const matches = globals.queries.error.matches(newTree.rootNode)
-    const diagnostics: Diagnostic[] = []
-
-    for (const match of matches) {
-        for (const capture of match.captures) {
-            const node = capture.node;
-
-            diagnostics.push({
-                range: {
-                    start: {
-                        line: node.startPosition.row,
-                        character: node.startPosition.column,
-                    },
-                    end: {
-                        line: node.endPosition.row,
-                        character: node.endPosition.column,
-                    }
-                },
-                message: node.isMissing ?
-                    `Syntax error: Missing ${node.text}` :
-                    `Unexpected token '${node.text}'`,
-            })
-        }
-    }
+    const diagnostics = getErrorNodes(newTree.rootNode).map(node => formatError(node))
 
     return {
         uri: updated.uri,
