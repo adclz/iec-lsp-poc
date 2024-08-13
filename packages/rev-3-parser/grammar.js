@@ -25,7 +25,6 @@ module.exports = grammar({
     ],
 
     conflicts: $ => [
-
         [$.signed_int, $.bit_str_literal],
         [$.signed_int],
 
@@ -74,6 +73,8 @@ module.exports = grammar({
         [$.global_var_name, $.enum_value],
     ],
 
+    word: $ => $.identifier,
+
     rules: {
         // Source file declaration
         source_file : $ => repeat(
@@ -90,19 +91,6 @@ module.exports = grammar({
             )
         ),
 
-        // Table 1 - Character sets
-        // Table 2 - Identifiers
-
-        letter: $ => /[a-zA-Z_]/,
-        digit: $ => /[0-9]/,
-        bit: $ => /[01]/,
-        octal_digit: $ => /[0-7]/,
-        hex_digit: $ => /[0-9a-fA-F]/,
-        identifier: $ => prec.left(seq(
-            $.letter,
-            repeat(choice($.letter, $.digit))
-        )),
-
         // Table 3 - Comments 
 
         comment: $ => choice(
@@ -111,7 +99,7 @@ module.exports = grammar({
             seq('/*', repeat(choice(/[^*]/, /\*[^/]/)), '*/')
         ),
 
-        WS: $ => token(choice('', '\t', '\r', '\n')),
+        WS: $ => token(choice('\t', '\r', '\n')),
         EOL: $ => token("\n"),
 
         // Table 4 - Pragma 
@@ -1128,7 +1116,7 @@ module.exports = grammar({
             optional(seq(':', $.data_type_access)),
             repeat($.using_directive),
             repeat(choice($.io_var_decls, $.func_var_decls, $.temp_var_decls)),
-            $.func_body,
+            //$.func_body,
             'END_FUNCTION'
         ),
 
@@ -2061,5 +2049,15 @@ module.exports = grammar({
         fbd_network: $ => "todo_fbd",
 
         other_languages: $ => "todo_other",
+
+                // Table 1 - Character sets
+        // Table 2 - Identifiers
+
+        letter: $ => /[a-zA-Z_]/,
+        digit: $ => /[0-9]/,
+        bit: $ => /[01]/,
+        octal_digit: $ => /[0-7]/,
+        hex_digit: $ => /[0-9a-fA-F]/,
+        identifier: $ =>  /[0-9a-zA-Z_]+/,
     }
 })

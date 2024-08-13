@@ -1,5 +1,6 @@
 {
   "name": "IEC61131_rev_3",
+  "word": "identifier",
   "rules": {
     "source_file": {
       "type": "REPEAT",
@@ -33,55 +34,6 @@
           {
             "type": "SYMBOL",
             "name": "data_type_decl"
-          }
-        ]
-      }
-    },
-    "letter": {
-      "type": "PATTERN",
-      "value": "[a-zA-Z_]"
-    },
-    "digit": {
-      "type": "PATTERN",
-      "value": "[0-9]"
-    },
-    "bit": {
-      "type": "PATTERN",
-      "value": "[01]"
-    },
-    "octal_digit": {
-      "type": "PATTERN",
-      "value": "[0-7]"
-    },
-    "hex_digit": {
-      "type": "PATTERN",
-      "value": "[0-9a-fA-F]"
-    },
-    "identifier": {
-      "type": "PREC_LEFT",
-      "value": 0,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "letter"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "letter"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "digit"
-                }
-              ]
-            }
           }
         ]
       }
@@ -186,10 +138,6 @@
       "content": {
         "type": "CHOICE",
         "members": [
-          {
-            "type": "STRING",
-            "value": ""
-          },
           {
             "type": "STRING",
             "value": "\t"
@@ -5369,10 +5317,6 @@
           }
         },
         {
-          "type": "SYMBOL",
-          "name": "func_body"
-        },
-        {
           "type": "STRING",
           "value": "END_FUNCTION"
         }
@@ -10080,6 +10024,30 @@
     "other_languages": {
       "type": "STRING",
       "value": "todo_other"
+    },
+    "letter": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z_]"
+    },
+    "digit": {
+      "type": "PATTERN",
+      "value": "[0-9]"
+    },
+    "bit": {
+      "type": "PATTERN",
+      "value": "[01]"
+    },
+    "octal_digit": {
+      "type": "PATTERN",
+      "value": "[0-7]"
+    },
+    "hex_digit": {
+      "type": "PATTERN",
+      "value": "[0-9a-fA-F]"
+    },
+    "identifier": {
+      "type": "PATTERN",
+      "value": "[0-9a-zA-Z_]+"
     }
   },
   "extras": [

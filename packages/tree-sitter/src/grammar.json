@@ -1,5 +1,6 @@
 {
   "name": "IEC61131",
+  "word": "identifier",
   "rules": {
     "source_file": {
       "type": "REPEAT",
@@ -71,7 +72,7 @@
       "type": "TOKEN",
       "content": {
         "type": "STRING",
-        "value": ""
+        "value": "kdfh"
       }
     },
     "EOL": {
@@ -134,95 +135,6 @@
           "name": "configuration_declaration"
         }
       ]
-    },
-    "_letter": {
-      "type": "PATTERN",
-      "value": "[a-zA-Z]"
-    },
-    "_digit": {
-      "type": "PATTERN",
-      "value": "\\d"
-    },
-    "_octal_digit": {
-      "type": "PATTERN",
-      "value": "[0-7]"
-    },
-    "_hex_digit": {
-      "type": "PATTERN",
-      "value": "[0-9a-fA-F]"
-    },
-    "identifier": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_letter"
-            },
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "_"
-                },
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "_letter"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "_digit"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "_"
-                  },
-                  {
-                    "type": "BLANK"
-                  }
-                ]
-              },
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "_letter"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "_digit"
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "todo": {
-      "type": "STRING",
-      "value": "TODO"
     },
     "constant": {
       "type": "CHOICE",
@@ -7143,6 +7055,34 @@
     "exit_statement": {
       "type": "STRING",
       "value": "EXIT"
+    },
+    "_letter": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z]"
+    },
+    "_digit": {
+      "type": "PATTERN",
+      "value": "\\d"
+    },
+    "_octal_digit": {
+      "type": "PATTERN",
+      "value": "[0-7]"
+    },
+    "_hex_digit": {
+      "type": "PATTERN",
+      "value": "[0-9a-fA-F]"
+    },
+    "identifier": {
+      "type": "PATTERN",
+      "value": "[0-9a-zA-Z_]+"
+    },
+    "todo": {
+      "type": "STRING",
+      "value": "TODO"
+    },
+    "keyword": {
+      "type": "PATTERN",
+      "value": "[A-Z_]+"
     }
   },
   "extras": [

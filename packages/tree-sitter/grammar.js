@@ -103,17 +103,17 @@ module.exports = grammar({
             "(*",
             optional($.comment_text),
             "*)"
-          ),
+        ),
         comment_text: $ => repeat1(choice(/.|\n|\r/)),
 
         // A second special terminal symbol utilized in this syntax is the "null string", that is, a string
         // containing no characters. This is represented by the terminal symbol NIL.
-        NIL: $ => token(""),
+        NIL: $ => token("kdfh"),
 
         // This symbol shall normally consist of the "paragraph
         // separator" character defined as hexadecimal code 2029 by ISO/IEC 10646
         EOL: $ => token("\u2029"),
-        
+
         // B.0 Programming model
 
         library_element_name: $ => choice(
@@ -132,19 +132,6 @@ module.exports = grammar({
             $.program_declaration,
             $.configuration_declaration
         ),
-
-        // B.1 Common elements
-
-        _letter: $ => /[a-zA-Z]/,
-        _digit: $ => /\d/,
-        _octal_digit: $ => /[0-7]/,
-        _hex_digit: $ => /[0-9a-fA-F]/,
-        identifier: $ => seq(
-          choice($._letter, seq("_", choice($._letter, $._digit))),
-            repeat(seq(optional("_"), choice($._letter, $._digit)))
-        ),
-
-        todo: $ => "TODO",
 
         // B.1.2 Constants
 
@@ -270,9 +257,9 @@ module.exports = grammar({
         // B.1.2.3 Time literals
 
         time_literal: $ => choice(
-            $.duration, 
-            $.time_of_day, 
-            $.date, 
+            $.duration,
+            $.time_of_day,
+            $.date,
             $.date_and_time
         ),
 
@@ -670,7 +657,7 @@ module.exports = grammar({
             $.var1_list,
             ":",
             "BOOL",
-            choice("R_EDGE", "F_TEDGE")
+            choice("R_EDGE", "F_EDGE")
         ),
 
         var_init_decl: $ => choice(
@@ -918,8 +905,8 @@ module.exports = grammar({
 
         // TODO Add support for more languages
         function_body: $ => choice(
-    $.instruction_list,
-                $.statement_list
+            $.instruction_list,
+            $.statement_list
         ),
 
         var2_init_decl: $ => choice(
@@ -982,9 +969,9 @@ module.exports = grammar({
         program_declaration: $ => seq(
             "PROGRAM", $.program_type_name,
             repeat(choice(
-                $.io_var_declarations, 
-                $.other_var_declarations, 
-                $.located_var_declarations, 
+                $.io_var_declarations,
+                $.other_var_declarations,
+                $.located_var_declarations,
                 $.program_access_decls)
             ),
             $.function_block_body,
@@ -1146,6 +1133,19 @@ module.exports = grammar({
         ),
 
         ...B2.rules,
-        ...B3.rules
-    }
+        ...B3.rules,
+
+        // B.1 Common elements
+
+        _letter: $ => /[a-zA-Z]/,
+        _digit: $ => /\d/,
+        _octal_digit: $ => /[0-7]/,
+        _hex_digit: $ => /[0-9a-fA-F]/,
+        identifier: $ => /[0-9a-zA-Z_]+/,
+
+        todo: $ => "TODO",
+        keyword : $ => /[A-Z_]+/,
+    },
+
+    word: $ => $.identifier
 });

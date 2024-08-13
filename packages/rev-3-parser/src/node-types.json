@@ -2133,10 +2133,6 @@
           "named": true
         },
         {
-          "type": "func_body",
-          "named": true
-        },
-        {
           "type": "func_var_decls",
           "named": true
         },
@@ -2321,25 +2317,6 @@
         },
         {
           "type": "unsigned_int",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "identifier",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "digit",
-          "named": true
-        },
-        {
-          "type": "letter",
           "named": true
         }
       ]
@@ -7249,6 +7226,10 @@
     "named": false
   },
   {
+    "type": "identifier",
+    "named": true
+  },
+  {
     "type": "j",
     "named": false
   },
@@ -7262,10 +7243,6 @@
   },
   {
     "type": "ld_rung",
-    "named": true
-  },
-  {
-    "type": "letter",
     "named": true
   },
   {
