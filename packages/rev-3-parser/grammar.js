@@ -20,13 +20,12 @@ module.exports = grammar({
         [$.il_label, $.access_name],
 
         [$.std_func_name, $.unary_expr],
-        [$.int_literal, $.bit_str_literal],
-
+        [$.unsigned_int, $.signed_int, $.int_literal,  $.bit_str_literal],
     ],
 
     conflicts: $ => [
-        [$.signed_int, $.bit_str_literal],
         [$.signed_int],
+        [$.signed_int, $.bit_str_literal],
 
         // ambiguity in PROGRAM declaration
         [$.class_name, $.namespace_name, $.variable_name],
@@ -1116,7 +1115,7 @@ module.exports = grammar({
             optional(seq(':', $.data_type_access)),
             repeat($.using_directive),
             repeat(choice($.io_var_decls, $.func_var_decls, $.temp_var_decls)),
-            //$.func_body,
+            $.func_body,
             'END_FUNCTION'
         ),
 
@@ -1162,6 +1161,10 @@ module.exports = grammar({
             repeat($.using_directive),
             optional(seq("EXTENDS", choice($.fb_type_access, $.class_type_access))),
             optional(seq("IMPLEMENTS", $.interface_name_list)),
+            repeat(choice($.fb_io_var_decls, $.func_var_decls, $.temp_var_decls, $.other_var_decls)),
+            repeat($.method_decl),
+            optional($.fb_body),
+            "END_FUNCTION_BLOCK"
         ),
 
         fb_io_var_decls: $ => choice(
@@ -1218,7 +1221,7 @@ module.exports = grammar({
             $.other_languages
         ),
 
-        method_decls: $ => seq(
+        method_decl: $ => seq(
             'METHOD',
             $.access_spec,
             optional(choice('FINAL', 'ABSTRACT')),
@@ -1242,7 +1245,7 @@ module.exports = grammar({
             optional(seq("EXTENDS", $.class_type_access)),
             optional(seq("IMPLEMENTS", $.interface_name_list)),
             repeat(choice($.func_var_decls, $.other_var_decls)),
-            repeat($.method_decls),
+            repeat($.method_decl),
             'END_CLASS'
         ),
 

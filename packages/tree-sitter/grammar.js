@@ -10,39 +10,49 @@ const B3 = require("./grammars/B3");
 module.exports = grammar({
     name: "IEC61131",
 
+    externals: $ => [
+        $.field_selector,
+    ],
+
     extras: $ => [
-        $.todo,
         /\s/, // Whitespace
         $.single_line_comment,
-        $.multi_line_comment
+        $.multi_line_comment,
+        //$.EOL,
+        //$.WS
     ],
 
     precedences: $ => [
-        [$.signed_integer, $.unary_operator],
-        [$.variable_name, $.enumerated_value]
+        [$.unary_operator, $.signed_integer],
+        [$.variable_name, $.enumerated_value],
+        [$.bit_string_literal, $.integer_literal],
+
+        [$.boolean_literal, $.numeric_literal],
+
+        // Conflicts between IL operators & fn names
+        [$.il_expr_operator, $.standard_function_name],
+        [$.il_simple_operator, $.standard_function_name],
+        [$.unary_operator, $.standard_function_name],
+
+        [$.bit_string_literal, $.signed_integer],
+        [$.variable_name, $.fb_name],
     ],
 
     conflicts: $ => [
         // All rules below are ambiguous with each other and all refer to $.identifier rule.
         // Unfortunately, we can't set a precedence to distinguish them since they are not related.
         [$.simple_type_name,
-        $.subrange_type_name,
         $.enumerated_type_name,
-        $.array_type_name,
-        $.structure_type_name,
-        $.string_type_name,
         $.derived_function_name,
         $.derived_function_block_name,
         $.program_type_name,
         $.configuration_name,
         $.resource_type_name,
-        $.simple_type_name,
         $.subrange_type_name,
-        $.enumerated_type_name,
         $.array_type_name,
         $.structure_type_name,
         $.string_type_name],
-        // 'TYPE'  (any_of_the_below  identifier)  •  ':' 
+
         [$.simple_type_name,
         $.subrange_type_name,
         $.enumerated_type_name,
@@ -50,45 +60,20 @@ module.exports = grammar({
         $.structure_type_name,
         $.string_type_name
         ],
+
         [$.enumerated_value, $.variable_name, $.global_var_name],
         [$.resource_name, $.variable_name, $.global_var_name],
         [$.global_var_name, $.resource_name],
         [$.global_var_name, $.resource_name, $.program_name],
         [$.variable_name, $.fb_name, $.program_name],
 
-        // 'TYPE'  simple_type_name  ':'  simple_specification  ':='  any_of_the_below  •  ';'
-        [$.bit_string_literal, $.integer_literal],
-
-        [$.identifier],
-        [$.integer],
-        [$.binary_integer],
-        [$.octal_integer],
-        [$.hex_integer],
-
-        // 'PROGRAM'  program_type_name  'VAR_INPUT'  'RETAIN'  (any_of_the_below  identifier)  •  ':' 
-        [$.fb_name, $.variable_name],
-        // 'PROGRAM'  program_type_name  'VAR'  'RETAIN'  (any_of_the_below  fb_name_decl)  •  ';' 
-        [$.var_declaration, $.var_init_decl],
-        // 'PROGRAM'  program_type_name  'VAR'  'RETAIN'  (any_of_the_below  string_var_declaration)  •  ';' 
-        [$.temp_var_decl, $.var_init_decl],
-        // 'PROGRAM'  program_type_name  'VAR'  location  ':'  (any_of_the_below  'STRING')  •  ';' 
         [$.elementary_type_name, $.single_byte_string_spec],
-        // 'PROGRAM'  program_type_name  'VAR'  location  ':'  (any_of_the_below  'WSTRING')  •  ';'
         [$.double_byte_string_spec, $.elementary_type_name],
-        // 'PROGRAM'  program_type_name  'VAR'  location  ':'  (any_of_the_below  identifier)  •  ';'
         [$.array_type_name, $.simple_type_name, $.structure_type_name, $.subrange_type_name],
-        // 'PROGRAM'  program_type_name  'VAR_EXTERNAL'  global_var_name  ':'  (any_of_the_below  identifier)  •  ';' 
         [$.array_type_name, $.derived_function_block_name, $.simple_type_name, $.structure_type_name, $.subrange_type_name],
-        // 'CONFIGURATION'  configuration_name  resource_declaration  access_name  ':'  (any_of_the_below  identifier)  •  '.'
+
         [$.fb_name, $.program_name, $.resource_name, $.variable_name],
-        [$.initialized_structure, $.structured_var_declaration],
-        [$.simple_spec_init, $.var1_declaration],
-        [$.subrange_spec_init, $.var1_declaration],
-        [$.enumerated_spec_init, $.var1_declaration],
-        [$.array_spec_init, $.array_var_declaration],
         [$.elementary_type_name, $.var_spec],
-        [$.standard_function_name, $.standard_function_block_name],
-        [$.fb_name, $.derived_function_name]
     ],
 
     rules: {
@@ -108,11 +93,16 @@ module.exports = grammar({
 
         // A second special terminal symbol utilized in this syntax is the "null string", that is, a string
         // containing no characters. This is represented by the terminal symbol NIL.
-        NIL: $ => token("kdfh"),
+        // NOTE: NIL is not defined in the rev-3 standard
+        // Moreover tree-sitter doesn't support empty strings as tokens
+        //NIL: $ => token(""),
 
         // This symbol shall normally consist of the "paragraph
         // separator" character defined as hexadecimal code 2029 by ISO/IEC 10646
-        EOL: $ => token("\u2029"),
+        // NOTE: rev-3 defines this symobl as '\n'
+        EOL: $ => token("\n"),
+
+        //WS: $ => token(choice('\t', '\r', '\n')),
 
         // B.0 Programming model
 
@@ -135,13 +125,13 @@ module.exports = grammar({
 
         // B.1.2 Constants
 
-        constant: $ => choice(
+        constant: $ => prec.right(choice(
             $.numeric_literal,
             $.character_string,
             $.time_literal,
             $.bit_string_literal,
             $.boolean_literal
-        ),
+        )),
 
         // B 2.1 Numeric literals
 
@@ -164,8 +154,8 @@ module.exports = grammar({
         ),
 
         integer: $ => seq(
-            prec(1, $._digit),
-            prec.left(2, repeat(seq(optional("_"), $._digit)))
+            $._digit,
+            repeat(seq(optional("_"), $._digit))
         ),
 
         binary_integer: $ => seq(
@@ -205,7 +195,7 @@ module.exports = grammar({
         bit_string_literal: $ => seq(
             optional(seq(choice("BYTE", "WORD", "DWORD", "LWORD"), "#")),
             //NOTE: IEC says we should use unsigned_integer here, but it's not defined
-            choice($.signed_integer, $.binary_integer, $.octal_integer, $.hex_integer)
+            choice($.integer, $.binary_integer, $.octal_integer, $.hex_integer)
         ),
 
         boolean_literal: $ => seq(
@@ -421,8 +411,8 @@ module.exports = grammar({
         data_type_declaration: $ => seq(
             "TYPE",
             $.type_declaration,
-            ";",
-            repeat(seq($.type_declaration, ";")),
+            $.SEMICOLON,
+            repeat(seq($.type_declaration, $.SEMICOLON)),
             "END_TYPE"
         ),
 
@@ -554,8 +544,8 @@ module.exports = grammar({
         ),
 
         structure_declaration: $ => seq(
-            "STRUCT", $.structure_element_declaration, ";",
-            repeat(seq($.structure_element_declaration, ";")),
+            "STRUCT", $.structure_element_declaration, $.SEMICOLON,
+            repeat(seq($.structure_element_declaration, $.SEMICOLON)),
             "END_STRUCT"
         ),
 
@@ -567,7 +557,8 @@ module.exports = grammar({
         structure_element_name: $ => $.identifier,
 
         structure_initialization: $ => seq(
-            "(", $.structure_element_initialization,
+            // Note: IEC 61131-3 standard does not define as optionnal but i had to so otherwise tree sitter can't parse it
+            "(", optional($.structure_element_initialization),
             repeat(seq(",", $.structure_element_initialization)),
             ")"
         ),
@@ -610,7 +601,7 @@ module.exports = grammar({
 
         location_prefix: $ => choice("I", "Q", "M"),
 
-        size_prefix: $ => choice("NIL", "X", "B", "W", "D", "L"),
+        size_prefix: $ => choice("X", "B", "W", "D", "L"),
 
         // B.1.4.2 Multi-element variables
 
@@ -640,14 +631,12 @@ module.exports = grammar({
 
         record_variable: $ => $.symbolic_variable,
 
-        field_selector: $ => $.identifier,
-
         // B.1.4.3 Declaration and initialization
 
         input_declarations: $ => seq(
             "VAR_INPUT", choice("RETAIN", "NON_RETAIN"),
-            $.input_declaration, ";",
-            repeat(seq($.input_declaration, ";")),
+            $.input_declaration, $.SEMICOLON,
+            repeat(seq($.input_declaration, $.SEMICOLON)),
             "END_VAR"
         ),
 
@@ -704,15 +693,15 @@ module.exports = grammar({
 
         output_declarations: $ => seq(
             "VAR_OUTPUT", choice("RETAIN", "NON_RETAIN"),
-            $.var_init_decl, ";",
-            repeat(seq($.var_init_decl, ";")),
+            $.var_init_decl, $.SEMICOLON,
+            repeat(seq($.var_init_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
         input_output_declarations: $ => seq(
-            "VAR", choice("RETAIN", "NON_RETAIN"),
-            $.var_declaration, ";",
-            repeat(seq($.var_declaration, ";")),
+            "VAR_IN_OUT", choice("RETAIN", "NON_RETAIN"),
+            $.var_declaration, $.SEMICOLON,
+            repeat(seq($.var_declaration, $.SEMICOLON)),
             "END_VAR"
         ),
 
@@ -744,24 +733,33 @@ module.exports = grammar({
         var_declarations: $ => seq(
             "VAR",
             "CONSTANT",
-            $.var_init_decl, ";",
-            repeat(seq($.var_init_decl, ";")),
+            $.var_init_decl, $.SEMICOLON,
+            repeat(seq($.var_init_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
         retentive_var_declarations: $ => seq(
             "VAR",
             "RETAIN",
-            $.var_init_decl, ";",
-            repeat(seq($.var_init_decl, ";")),
+            $.var_init_decl, $.SEMICOLON,
+            repeat(seq($.var_init_decl, $.SEMICOLON)),
+            "END_VAR"
+        ),
+
+        // TODO! Not in the standard, but still referenced
+        non_retentive_var_declarations: $ => seq(
+            "VAR",
+            "NON_RETAIN",
+            $.var_init_decl, $.SEMICOLON,
+            repeat(seq($.var_init_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
         located_var_declarations: $ => seq(
             "VAR",
             optional(choice("CONSTANT", "RETAIN", "NON_RETAIN")),
-            $.located_var_decl, ";",
-            repeat(seq($.located_var_decl, ";")),
+            $.located_var_decl, $.SEMICOLON,
+            repeat(seq($.located_var_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
@@ -774,8 +772,8 @@ module.exports = grammar({
 
         external_var_declarations: $ => seq(
             "VAR_EXTERNAL", optional("CONSTANT"),
-            $.external_declaration, ";",
-            repeat(seq($.external_declaration, ";")),
+            $.external_declaration, $.SEMICOLON,
+            repeat(seq($.external_declaration, $.SEMICOLON)),
             "END_VAR"
         ),
 
@@ -795,8 +793,8 @@ module.exports = grammar({
 
         global_var_declarations: $ => seq(
             "VAR_GLOBAL", optional(choice("CONSTANT", "RETAIN")),
-            $.global_var_decl, ";",
-            repeat(seq($.global_var_decl, ";")),
+            $.global_var_decl, $.SEMICOLON,
+            repeat(seq($.global_var_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
@@ -851,8 +849,8 @@ module.exports = grammar({
 
         incompl_located_var_declarations: $ => seq(
             "VAR", optional(choice("RETAIN", "NON_RETAIN")),
-            $.incompl_located_var_decl, ";",
-            optional(seq($.incompl_located_var_decl, ";")),
+            $.incompl_located_var_decl, $.SEMICOLON,
+            optional(seq($.incompl_located_var_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
@@ -882,30 +880,44 @@ module.exports = grammar({
         function_name: $ => choice($.standard_function_name, $.derived_function_name),
 
         // TODO Add standard function names
-        standard_function_name: $ => $.todo,
+        standard_function_name: $ => choice(
+            'TRUNC', 'ABS', 'SQRT', 'LN', 'LOG', 'EXP',
+            'SIN', 'COS', 'TAN', 'ASIN', 'ACOS', 'ATAN', 'ATAN2',
+            'ADD', 'SUB', 'MUL', 'DIV', 'MOD', 'EXPT', 'MOVE',
+            'SHL', 'SHR', 'ROL', 'ROR',
+            'AND', 'OR', 'XOR', 'NOT',
+            'SEL', 'MAX', 'MIN', 'LIMIT', 'MUX',
+            'GT', 'GE', 'EQ', 'LE', 'LT', 'NE',
+            'LEN', 'LEFT', 'RIGHT', 'MID', 'CONCAT', 'INSERT', 'DELETE', 'REPLACE', 'FIND'
+            // incomplete list ?
+        ), //NOTE: list taken from rev-3
 
         derived_function_name: $ => $.identifier,
 
         function_declaration: $ => seq(
             "FUNCTION", $.derived_function_name, ":",
             choice($.elementary_type_name, $.derived_type_name),
-            repeat(choice($.io_var_declarations, $.function_var_decls)),
-            $.function_body,
+            repeat(choice($.function_var_decls, $.io_var_declarations)),
+            optional($.function_body),
             "END_FUNCTION"
         ),
 
-        io_var_declarations: $ => choice($.input_declarations, $.output_declarations, $.input_output_declarations),
+        io_var_declarations: $ => choice(
+            $.input_declarations,
+            $.output_declarations,
+            $.input_output_declarations
+        ),
 
         function_var_decls: $ => seq(
             "VAR", optional("CONSTANT"),
-            $.var2_init_decl, ";",
-            repeat(seq($.var2_init_decl, ";")),
+            $.var2_init_decl, $.SEMICOLON,
+            repeat(seq($.var2_init_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
         // TODO Add support for more languages
         function_body: $ => choice(
-            $.instruction_list,
+            //$.instruction_list,
             $.statement_list
         ),
 
@@ -918,16 +930,18 @@ module.exports = grammar({
 
         // B.1.5.2 Function blocks
 
-
         function_block_type_name: $ => choice($.standard_function_block_name, $.derived_function_block_name),
 
         // TODO Add standard function block names
-        standard_function_block_name: $ => $.todo,
+        standard_function_block_name: $ => choice(
+            'SR', 'RS', 'R_TRIG', 'F_TRIG', 'CTU', 'CTD', 'CTUD', 'TP', 'TON', 'TOF'
+        ), // incomplete list ?
+        // NOTE: list taken from rev-3
 
         derived_function_block_name: $ => $.identifier,
 
         function_block_declaration: $ => seq(
-            "FUNCTION_BLOCK", $.derived_function_block_name, ":",
+            "FUNCTION_BLOCK", $.derived_function_block_name,
             repeat(choice($.io_var_declarations, $.other_var_declarations)),
             $.function_block_body,
             "END_FUNCTION_BLOCK"
@@ -937,28 +951,28 @@ module.exports = grammar({
             $.external_var_declarations,
             $.var_declarations,
             $.retentive_var_declarations,
-            //$.non_retentive_var_declarations, NOTE: only 1 occurence of non_retentive_var_declarations
+            $.non_retentive_var_declarations,
             $.temp_var_decls,
             $.incompl_located_var_declarations
         ),
 
         temp_var_decls: $ => seq(
             "VAR_TEMP",
-            $.temp_var_decl, ";",
-            repeat(seq($.temp_var_decl, ";")),
+            $.temp_var_decl, $.SEMICOLON,
+            repeat(seq($.temp_var_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
         non_retentive_var_decls: $ => seq(
             "VAR_NON_RETAIN",
-            $.var_init_decl, ";",
-            repeat(seq($.var_init_decl, ";")),
+            $.var_init_decl, $.SEMICOLON,
+            repeat(seq($.var_init_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
         // TODO Add support for more languages
         function_block_body: $ => choice(
-            $.instruction_list,
+            //$.instruction_list,
             $.statement_list
         ),
 
@@ -979,8 +993,8 @@ module.exports = grammar({
         ),
 
         program_access_decls: $ => seq(
-            "VAR_ACCESS", $.program_access_decl, ";",
-            repeat(seq($.program_access_decl, ";")),
+            "VAR_ACCESS", $.program_access_decl, $.SEMICOLON,
+            repeat(seq($.program_access_decl, $.SEMICOLON)),
             "END_VAR"
         ),
 
@@ -1015,16 +1029,16 @@ module.exports = grammar({
         ),
 
         single_resource_declaration: $ => seq(
-            repeat(seq($.task_configuration, ";")),
-            $.program_configuration, ";",
-            repeat(seq($.program_configuration, ";")),
+            repeat(seq($.task_configuration, $.SEMICOLON)),
+            $.program_configuration, $.SEMICOLON,
+            repeat(seq($.program_configuration, $.SEMICOLON)),
         ),
 
         resource_name: $ => $.identifier,
 
         access_declarations: $ => seq(
-            "VAR_ACCESS", $.access_declaration, ";",
-            repeat(seq($.access_declaration, ";")),
+            "VAR_ACCESS", $.access_declaration, $.SEMICOLON,
+            repeat(seq($.access_declaration, $.SEMICOLON)),
             "END_VAR"
         ),
 
@@ -1120,8 +1134,8 @@ module.exports = grammar({
 
         instance_specific_initializations: $ => seq(
             "VAR_CONFIG",
-            $.instance_specific_init, ";",
-            repeat(seq($.instance_specific_init, ";")),
+            $.instance_specific_init, $.SEMICOLON,
+            repeat(seq($.instance_specific_init, $.SEMICOLON)),
             "END_VAR"
         ),
 
@@ -1135,16 +1149,21 @@ module.exports = grammar({
         ...B2.rules,
         ...B3.rules,
 
-        // B.1 Common elements
-
-        _letter: $ => /[a-zA-Z]/,
-        _digit: $ => /\d/,
+        _letter: $ => /[A-Z_a-z_]/,
+        _digit: $ => /[0-9]/,
         _octal_digit: $ => /[0-7]/,
-        _hex_digit: $ => /[0-9a-fA-F]/,
-        identifier: $ => /[0-9a-zA-Z_]+/,
+        _hex_digit: $ => /[0-9A-F]/,
+        identifier: $ => /[A-Za-z_][A-Za-z0-9_]*/,
 
-        todo: $ => "TODO",
-        keyword : $ => /[A-Z_]+/,
+        // Improve error recovery for missing punctuation:
+        SEMICOLON: $ => choice(
+            seq(";", $.EOL),
+            $.EOL,
+            ";",
+        )
+        
+        
+        // B.1 Common elements
     },
 
     word: $ => $.identifier
