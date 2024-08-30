@@ -1,8 +1,0 @@
-{
-    "compilerOptions": {
-      "outDir": "out",
-      "rootDir": "src",
-      "module": "nodenext"
-    },
-    "include": ["src"],
-}
