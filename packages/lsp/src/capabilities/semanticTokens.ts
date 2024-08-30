@@ -1,94 +1,94 @@
-import Parser from "tree-sitter";
-import { SemanticTokens, SemanticTokensRequest, SemanticTokensRangeRequest } from "vscode-languageserver";
-import { TextDocument } from "vscode-languageserver-textdocument";
-import { Queries } from "../parser/queries";
+import { SemanticTokens, SemanticTokensRangeParams, SemanticTokensRangeRequest } from "vscode-languageserver";
 import { GlobalState } from "../server";
 
 export const tokenTypes = [
-    'comment',
-    'keyword.function',
-    'keyword.modifier',
-    'keyword.coroutine',
-    'keyword.operator',
-    'type.definition',
-    'type.builtin',
-    'punctuation.separator',
-    'punctuation.bracket',
-    'number',
-    'number.float',
+    'namespace',
+    'type',
+    'class',
+    'enum',
+    'interface',
+    'struct',
+    'typeParameter',
+    'parameter',
     'variable',
-    'variable.parameter'
+    'property',
+    'enumMember',
+    'event',
+    'function',
+    'method',
+    'macro',
+    'keyword',
+    'modifier',
+    'comment',
+    'string',
+    'number',
+    'regexp',
+    'operator',
+    'decorator'
 ];
 
-const semanticTokensProvider = (globalState: GlobalState, parser: Parser, queries: Queries) => {
-    const fullHandler: SemanticTokensRequest.HandlerSignature = (params) => {
-        //console.log('fullHandler', params);
-        const tree = globalState.trees.get(params.textDocument.uri);
-        if (!tree) {
-            return { data: [] };
-        }
+export const tokenModifiers = [
+    'declaration',
+    'definition',
+    'readonly',
+    'static',
+    'deprecated',
+    'abstract',
+    'async',
+    'modification',
+    'documentation',
+    'defaultLibrary'
+]
 
-        const captures = queries.semanticTokens.captures(tree.rootNode);
-        const builder = new SemanticTokensBuilder();
+const semanticTokensProvider = (globalState: GlobalState):
+    (params: SemanticTokensRangeParams) => Promise<SemanticTokens> => {
+    const {
+        queries,
+        trees
+    } = globalState
 
-        captures.forEach((capture) => {
-            const tokenTypeIndex = tokenTypes.indexOf(capture.name);
-            if (tokenTypeIndex === -1) {
-                return;
-            }
+    return async (params) => {
+        const tree = trees.get(params.textDocument.uri);
 
-            const { startPosition, endPosition } = capture.node;
-            builder.push(
-                startPosition.row,
-                startPosition.column,
-                endPosition.column - startPosition.column,
-                tokenTypeIndex,
-                0
-            )
-        })
-        return builder.build();
-    }
-
-    const rangeHandler: SemanticTokensRangeRequest.HandlerSignature = (params) => {
-        //console.log('rangeHandler', params);
-        const tree = globalState.trees.get(params.textDocument.uri);
         if (!tree) {
             return { data: [] };
         }
 
         const { start, end } = params.range;
-        const captures = queries.semanticTokens.captures(tree.rootNode);
+        const captures = queries.semanticTokens.captures(tree.rootNode,
+            {
+                startPosition: { row: start.line, column: start.character },
+                endPosition: { row: end.line, column: end.character }
+            });
+
         const builder = new SemanticTokensBuilder();
 
         captures.forEach((capture) => {
-            const tokenTypeIndex = tokenTypes.indexOf(capture.name);
+            const [type, modifier] = capture.name.split('.');
+            const tokenTypeIndex = tokenTypes.indexOf(type);
+
             if (tokenTypeIndex === -1) {
                 return;
             }
 
+            // Check if the modifier exists and calculate its bitwise value.
+            const tokenModifierIndex = tokenModifiers.indexOf(modifier);
+            const tokenModifiersBit = tokenModifierIndex !== -1 ? 1 << tokenModifierIndex : 0;
+
+
             const { startPosition, endPosition } = capture.node;
 
-            // Check if the capture node is within the specified range
-            if (
-                (startPosition.row > start.line || (startPosition.row === start.line && startPosition.column >= start.character)) &&
-                (endPosition.row < end.line || (endPosition.row === end.line && endPosition.column <= end.character))
-            ) {
-                builder.push(
-                    startPosition.row,
-                    startPosition.column,
-                    endPosition.column - startPosition.column,
-                    tokenTypeIndex,
-                    0
-                );
-            }
+            builder.push(
+                startPosition.row,
+                startPosition.column,
+                endPosition.column - startPosition.column,
+                tokenTypeIndex,
+                tokenModifiersBit
+            );
+
         });
 
         return builder.build();
-    }
-
-    return {
-        fullHandler,
-        rangeHandler
     }
 }
 

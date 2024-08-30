@@ -1,96 +1,25 @@
-[
-    "PROGRAM"
-    "TASK"
-    "CONFIGURATION"
-    "RESOURCE"
-    "END_CONFIGURATION"
-    "END_RESOURCE"
-] @keyword.function
+; Enum
 
-[
-    "RETAIN"
-    "NON_RETAIN"
-    "CONSTANT"
-] @keyword.modifier
+;(enumerated_type_name) @enum
+;(enumerated_value) @enumMember
 
-[
-    "ON"
-    "WITH"
-] @keyword.coroutine
+; Struct
 
-[
-    ":="
-    ":"
-] @keyword.operator
+;(structure_type_name) @struct
+;(structure_element_declaration
+;	((structure_element_name) @typeParameter))  
 
-[
-    (single_line_comment)
-    (multi_line_comment)
-] @comment
+;(structure_element_initialization
+; 	(structure_element_name) @parameter)  
 
-[
-    "VAR_GLOBAL"
-    "VAR_INPUT"
-    "VAR_OUTPUT"
-    "VAR_TEMP"
-    "VAR_GLOBAL"
-    "VAR_ACCESS"
-    "VAR_EXTERNAL"
-    "STRUCT"
-    "END_VAR"
-    "END_STRUCT"
-] @type.definition
+; Variable declaration
 
-[
-    "BYTE"
-    "WORD"
-    "DWORD"
-    "LWORD"
-    "SINT"
-    "INT"
-    "DINT"
-    "LINT"
-    "USINT"
-    "UINT"
-    "UDINT"
-    "ULINT"
-    "REAL"
-    "LREAL"
-    "TIME"
-    "DATE"
-    "TIME_OF_DAY"
-    "TOD"
-    "DATE_AND_TIME"
-    "DT"
-    "STRING"
-    "WSTRING"
-] @type.builtin
+;(var1_list
+;(variable_name)) @variable.declaration
 
-[
-    "INTERVAL"
-    "PRIORITY"
-] @variable.parameter 
+; Variable access
 
-[
-    ","
-    ";"
-] @punctuation.separator
+;(symbolic_variable
+; (variable_name)) @variable.readonly
 
-[
-    "("
-    ")"
-    "["
-    "]"
-] @punctuation.bracket
-
-[ 
-    (integer)
-    (signed_integer)
-    (hex_integer)
-    (binary_integer) 
-    (octal_integer)
-] @number
-
-(real_literal) @number.float
-
-(identifier) @variable
+;(field_selector) @property
