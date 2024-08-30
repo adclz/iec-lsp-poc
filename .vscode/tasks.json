@@ -1,93 +1,21 @@
-// See https://go.microsoft.com/fwlink/?LinkId=733558
-// for the documentation about the tasks.json format
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build parser",
-            "type": "shell",
-            "command": "cd ${workspaceFolder}/packages/tree-sitter && tree-sitter generate && pnpm build && pnpm prebuildify",
-        },
-        {
-            "label": "build lsp",
-            "type": "shell",
-            "command": "cd ${workspaceFolder}/packages/lsp && pnpm build",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "build parser"
-            ]
-        },
-        {
-            "label": "build parser & watch",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "build parser",
-                "watch"
-            ],
-        },
-        {
-            "label": "build lsp & watch",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "build lsp",
-                "watch"
-            ],
-        },
-        {
-            "label": "watch",
-            "dependsOn": [
-                "npm: watch:tsc",
-                "npm: watch:esbuild"
-            ],
-            "presentation": {
-                "reveal": "never"
-            },
-            "group": {
-                "kind": "build",
-            }
-        },
-        {
-            "type": "npm",
-            "script": "watch:esbuild",
-            "group": "build",
-            "problemMatcher": "$esbuild-watch",
-            "isBackground": true,
-            "label": "npm: watch:esbuild",
-            "presentation": {
-                "group": "watch",
-                "reveal": "never"
-            }
-        },
-        {
-            "type": "npm",
-            "script": "watch:tsc",
-            "group": "build",
-            "problemMatcher": "$tsc-watch",
-            "isBackground": true,
-            "label": "npm: watch:tsc",
-            "presentation": {
-                "group": "watch",
-                "reveal": "never"
-            }
-        },
-        {
-            "type": "npm",
-            "script": "watch-tests",
-            "problemMatcher": "$tsc-watch",
-            "isBackground": true,
-            "presentation": {
-                "reveal": "never",
-                "group": "watchers"
-            },
-            "group": "build"
-        },
-        {
-            "label": "tasks: watch-tests",
-            "dependsOn": [
-                "npm: watch",
-                "npm: watch-tests"
-            ],
-            "problemMatcher": []
-        }
-    ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "watch",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": "$esbuild-watch",
+			"path": "packages/vscode-extension",
+			"label": "npm: watch",
+			"detail": "node esbuild.js --watch",
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"presentation": {
+				"reveal": "never",
+			}
+		}
+	]
 }

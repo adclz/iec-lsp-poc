@@ -1,77 +1,84 @@
 {
-    "name": "iec61131-vscode-extension",
-    "displayName": "iec61131-vscode-extension",
-    "description": "",
-    "version": "0.0.1",
-    "engines": {
-      "vscode": "^1.90.0"
+  "name": "iec61131-vscode-extension",
+  "displayName": "iec61131-vscode-extension",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "languages": [
+    {
+      "aliases": [
+        "Structured Text",
+        "St"
+      ],
+      "extensions": [
+        ".st"
+      ]
+    }
+  ],
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:workbench.action.showAllSymbols"
+  ],
+  "enabledApiProposals": [
+    "extensionsAny"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
     },
-    "activationEvents": [
-      "*"
-    ],
+    "virtualWorkspaces": true
+  },
+  "browser": "./dist/iec.extension.browser.js",
+  "main": "./dist/iec.extension.node.js",
+  "contributes": {
     "languages": [
       {
+        "id": "st",
         "aliases": [
-          "Structured Text",
-          "St"
+          "st"
         ],
         "extensions": [
           ".st"
-        ]
+        ],
+        "configuration": "./language-configuration.json"
       }
     ],
-    "main": "./dist/extension.js",
-    "contributes": {
-      "languages": [
-        {
-          "id": "st",
-          "aliases": [
-            "st"
-          ],
-          "extensions": [
-            ".st"
-          ],
-          "configuration": "./language-configuration.json"
-        }
-      ],
-      "grammars": [
-        {
-          "language": "st",
-          "scopeName": "source.st",
-          "path": "./syntaxes/st.tmGrammar.json"
-        }
-      ]
-    },
-    "scripts": {
-      "vscode:prepublish": "pnpm run package",
-      "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
-      "watch": "npm-run-all -p watch:*",
-      "watch:esbuild": "node esbuild.js --watch",
-      "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-      "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
-      "compile-tests": "tsc -p . --outDir out",
-      "watch-tests": "tsc -p . -w --outDir out",
-      "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
-      "check-types": "tsc --noEmit",
-      "test": "vscode-test",
-      "lint": "eslint ./src"
-    },
-    "devDependencies": {
-      "@types/mocha": "^10.0.7",
-      "@types/node": "20.x",
-      "@types/vscode": "^1.90.0",
-      "@typescript-eslint/eslint-plugin": "^7.14.1",
-      "@typescript-eslint/parser": "^7.11.0",
-      "@vscode/test-cli": "^0.0.9",
-      "@vscode/test-electron": "^2.4.0",
-      "esbuild": "^0.21.5",
-      "eslint": "^8.57.0",
-      "npm-run-all": "^4.1.5",
-      "typescript": "^5.4.5",
-      "vscode-languageclient": "^9.0.1"
-    },
-    "dependencies": {
-      "iec61131-lsp-server": "workspace:*"
-    }
+    "grammars": [
+      {
+        "language": "st",
+        "scopeName": "source.st",
+        "path": "./syntaxes/st.tmGrammar.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -b tsconfig.json && node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "postinstall": "cd client && npm install && cd ../server && npm install && cd .. && node esbuild.js",
+    "lint": "eslint client server --ext ts",
+    "deploy": "npx vsce publish --noVerify",
+    "pretest-extension": "npx esbuild client/src/test/suite/index.ts --bundle --external:vscode --target=es2020 --format=cjs --outfile=dist/extension.test.js --define:process=\"{\\\"env\\\":{}}\"",
+    "test-server": "cd server && npm run test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.11.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "esbuild": "^0.21.5",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "iec61131-lsp-server": "workspace:*"
   }
-  
+}

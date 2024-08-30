@@ -1,17 +1,30 @@
-CONFIGURATION config  
-  // SL comment
+TYPE
+  RATE: (SLOW, FAST);
+  // ### This is a struct type
+  ENGINE: STRUCT
+    // ## SPEED
+    SPEED: INT;
+    // ## RUN comment
+    RUN: BOOL;
+    // ## BROKEN comment
+    BROKEN: BOOL;
+  END_STRUCT
+END_TYPE
 
-  VAR_GLOBAL CONSTANT
-    ResetCounterValue : INT := 123245;
-  END_VAR;
+FUNCTION EngineControl : INT
+    VAR
+      MYENGINE: ENGINE := (
+          SPEED := 0, 
+          RUN := FALSE, 
+          BROKEN := FALSE
+      );
+      MYENGINE2: ENGINE := (SPEED := 0, RUN := TRUE, BROKEN := FALSE);
+    END_VAR 
 
-  (* ML Comment *)
+    IF TRUE THEN  
+      MYENGINE.SPEED := 0;
+    END_IF
 
-  RESOURCE resource1 ON PLC
-    TASK plc_task(INTERVAL := T#100ms, PRIORITY := 1);
-    PROGRAM plc_task_instance WITH plc_task : plc_prg;
-  END_RESOURCE
-END_CONFIGURATION
-
-
-
+    MYENGINE2 := jkkk;
+    
+END_FUNCTION 

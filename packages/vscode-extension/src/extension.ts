@@ -1,4 +1,4 @@
-import path from 'node:path';
+/*import path from 'node:path';
 import * as vscode from 'vscode';
 import {
 	LanguageClient,
@@ -27,19 +27,21 @@ export function activate(context: vscode.ExtensionContext) {
         ],
 		synchronize: {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
-			fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
+			fileEvents: vscode.workspace.createFileSystemWatcher('/.clientrc')
 		}
 	};
 
-	console.log("Starting IEC 61331 Language Server");
+	console.log("Starting IEC 61131 Language Server");
 
 	// Create the language client and start the client.
 	client = new LanguageClient(
-		'iec61331',
-		'IEC 61331 Client',
+		'iec61131',
+		'IEC 61131 Client',
 		serverOptions,
 		clientOptions
 	);
+
+	client.sendRequest("symbolTables/get")
 
 	// Start the client. This will also launch the server
 	client.start();
@@ -49,3 +51,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() { }
+*/

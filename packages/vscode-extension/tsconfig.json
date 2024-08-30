@@ -1,17 +1,17 @@
 {
-	"compilerOptions": {
-		"module": "Node16",
-		"target": "ES2022",
-		"lib": [
-			"ES2022"
-		],
-		"sourceMap": true,
-		"strict": true,
-		"esModuleInterop": true,
-		"rootDir": "src"  
-	},
-	"exclude": [
-		"node_modules",
-		".vscode-test"
+	"files": [],
+	"references": [
+		{
+			"path": "./client/tsconfig.node.json"
+		},
+		{
+			"path": "./server/tsconfig.node.json"
+		},
+		{
+			"path": "./client/tsconfig.browser.json"
+		},
+		{
+			"path": "./server/tsconfig.browser.json"
+		}
 	]
 }

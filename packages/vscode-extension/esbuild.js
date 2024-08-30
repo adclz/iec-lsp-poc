@@ -1,6 +1,9 @@
-const esbuild = require("esbuild");
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-const production = process.argv.includes('--production');
+const esbuild = require('esbuild')
 const watch = process.argv.includes('--watch');
 
 /**
@@ -23,34 +26,76 @@ const esbuildProblemMatcherPlugin = {
 	},
 };
 
-async function main() {
-	const ctx = await esbuild.context({
-		entryPoints: [
-			'src/extension.ts'
-		],
-		bundle: true,
-		format: 'cjs',
-		minify: production,
-		sourcemap: !production,
-		sourcesContent: false,
-		platform: 'node',
-		outfile: 'dist/extension.js',
-		external: ['vscode'],
-		logLevel: 'silent',
-		plugins: [
-			/* add to the end of plugins array */
-			esbuildProblemMatcherPlugin,
-		],
-	});
-	if (watch) {
-		await ctx.watch();
-	} else {
-		await ctx.rebuild();
-		await ctx.dispose();
-	}
+// --- extension
+
+const clientBuildOptions = {
+	bundle: true,
+	external: ['vscode'],
+	target: 'es2020',
+	format: 'cjs',
+	sourcemap: 'external',
 }
 
-main().catch(e => {
-	console.error(e);
-	process.exit(1);
+const browserClient = esbuild.context({
+	...clientBuildOptions,
+	entryPoints: ['client/src/browser/main.ts'],
+	outfile: 'dist/iec.extension.browser.js',
+	plugins: [esbuildProblemMatcherPlugin],
+}).catch((e) => {
+	console.error(e)
 });
+
+const nodeClient = esbuild.context({
+	...clientBuildOptions,
+	platform: 'node',
+	entryPoints: ['client/src/node/main.ts'],
+	outfile: 'dist/iec.extension.node.js',
+	plugins: [esbuildProblemMatcherPlugin],
+}).catch((e) => {
+	console.error(e)
+})
+
+// --- server
+
+const serverBuildOptions = {
+	bundle: true,
+	external: ['fs', 'path'], // not ideal but because of treesitter/emcc
+	target: 'es2020',
+	format: 'iife',
+	sourcemap: 'external',
+	plugins: [esbuildProblemMatcherPlugin],
+}
+
+const browserServer = esbuild.context({
+	...serverBuildOptions,
+	entryPoints: ['server/src/browser/main.ts'],
+	outfile: 'dist/iec.server.browser.js',
+	plugins: [esbuildProblemMatcherPlugin],
+}).catch((e) => {
+	console.error(e)
+});
+
+const nodeServer = esbuild.context({
+	...serverBuildOptions,
+	platform: 'node',
+	entryPoints: ['server/src/node/main.ts'],
+	outfile: 'dist/iec.server.node.js',
+	plugins: [esbuildProblemMatcherPlugin],
+}).catch((e) => {
+	console.error(e)
+})
+
+
+Promise.all([
+	browserClient, browserServer, // client
+	nodeClient, nodeServer, // server
+]).then(results => {
+	results.forEach(async result => {
+		if (watch && result) {
+			await result.watch()
+			console.log('watching for file changes')
+		} else {
+			console.log('done building')
+		}
+	})
+})
