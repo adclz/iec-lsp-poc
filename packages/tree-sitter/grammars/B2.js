@@ -7,11 +7,15 @@ module.exports = {
     // B.2.1 Instructions and operands
 
     rules: {
-        instruction_list: $ => seq($.il_instruction, repeat($.il_instruction)),
+        instruction_list: $ => seq(
+            "#IL", 
+            $.il_instruction, 
+            repeat($.il_instruction)
+        ),
 
-        il_instruction: $ => prec.left(seq(
+        il_instruction: $ => prec.right(seq(
             optional(seq($.label, ":")),
-            repeat(
+            optional(
                 choice(
                     $.il_simple_operation,
                     $.il_expression,
@@ -26,10 +30,10 @@ module.exports = {
 
         label: $ => $.identifier,
 
-        il_simple_operation: $ => prec.right(choice(
+        il_simple_operation: $ => choice(
             seq($.il_simple_operator, optional($.il_operand)),
             seq($.function_name, optional($.il_operand_list))
-        )),
+        ),
 
         il_expression: $ => seq(
             $.il_expr_operator,

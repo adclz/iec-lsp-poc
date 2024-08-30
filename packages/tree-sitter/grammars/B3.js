@@ -59,25 +59,25 @@ module.exports = {
             $.primary_expression
         ),
 
-        unary_operator: $ => prec.left(choice("-", "NOT")),
+        unary_operator: $ => prec.right(choice("-", "NOT")),
 
         primary_expression: $ => choice(
             $.constant,
             $.enumerated_value,
             $.variable,
             seq("(", $.expression, ")"),
-            seq($.function_name, "(", $.param_assignment, repeat(seq(",", $.param_assignment)), ")"),
+            seq($.function_name,
+                "(", $.param_assignment, 
+                repeat(seq(",", $.param_assignment)), ")"),
         ),
 
         // B.3.2 Statements
 
-        statement_list: $ => prec.right(seq(
-            $.statement, ";",
-            repeat(seq($.statement, ";"))
-        )),
+        statement_list: $ => prec.left(repeat1(seq($.statement, $.SEMICOLON))),
+        
 
         statement: $ => choice(
-            $.NIL,
+            //$.NIL, NOTE: NIL is removed in rev-3
             $.assignment_statement,
             $.subprogram_control_statement,
             $.selection_statement,
@@ -115,7 +115,8 @@ module.exports = {
         ),
 
         if_statement: $ => seq(
-            "IF", $.expression, "THEN", $.statement_list,
+            "IF", $.expression, "THEN", 
+            optional($.statement_list),
             repeat(seq("ELSIF", $.expression, "THEN", $.statement_list)),
             optional(seq("ELSE", $.statement_list)),
             "END_IF"
