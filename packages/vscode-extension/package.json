@@ -60,11 +60,12 @@
     "vscode:prepublish": "pnpm run compile",
     "compile": "tsc -b tsconfig.json && node esbuild.js",
     "watch": "node esbuild.js --watch",
-    "postinstall": "cd client && npm install && cd ../server && npm install && cd .. && node esbuild.js",
+    "postInstallWasm": "npx tree-sitter build-wasm node_modules/tree-sitter-java",
+    "postinstall": "cd client && pnpm install && cd ../server && pnpm install && cd .. && node esbuild.js",
     "lint": "eslint client server --ext ts",
     "deploy": "npx vsce publish --noVerify",
     "pretest-extension": "npx esbuild client/src/test/suite/index.ts --bundle --external:vscode --target=es2020 --format=cjs --outfile=dist/extension.test.js --define:process=\"{\\\"env\\\":{}}\"",
-    "test-server": "cd server && npm run test"
+    "test-server": "cd server && pnpm run test"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.7",
@@ -77,8 +78,5 @@
     "esbuild": "^0.21.5",
     "eslint": "^8.57.0",
     "typescript": "^5.4.5"
-  },
-  "dependencies": {
-    "iec61131-lsp-server": "workspace:*"
   }
 }
