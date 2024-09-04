@@ -1,10 +1,17 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
 const esbuild = require('esbuild')
 const watch = process.argv.includes('--watch');
+const path = require('path')
+const fs = require('fs')
+
+const wasmPlugin = {
+	name: 'wasm',
+	setup(build) {
+		build.onLoad({ filter: /\.wasm$/ }, async (args) => ({
+			contents: await fs.promises.readFile(args.path),
+			loader: 'binary',
+		}))
+	},
+}
 
 /**
  * @type {import('esbuild').Plugin}
@@ -25,6 +32,18 @@ const esbuildProblemMatcherPlugin = {
 		});
 	},
 };
+
+const assets = {
+	name: 'assets transform',
+	setup(build) {
+		build.onLoad({ filter: /\.(scm)$/ }, async (args) => {
+			return {
+				contents: await fs.promises.readFile(args.path, 'utf8'),
+				loader: 'text'
+			};
+		});
+	}
+}
 
 // --- extension
 
@@ -59,7 +78,7 @@ const nodeClient = esbuild.context({
 
 const serverBuildOptions = {
 	bundle: true,
-	external: ['fs', 'path'], // not ideal but because of treesitter/emcc
+	external: ['fs', 'path', "node-gyp-build"], // not ideal but because of treesitter/emcc
 	target: 'es2020',
 	format: 'iife',
 	sourcemap: 'external',
@@ -70,7 +89,7 @@ const browserServer = esbuild.context({
 	...serverBuildOptions,
 	entryPoints: ['server/src/browser/main.ts'],
 	outfile: 'dist/iec.server.browser.js',
-	plugins: [esbuildProblemMatcherPlugin],
+	plugins: [esbuildProblemMatcherPlugin, wasmPlugin, assets],
 }).catch((e) => {
 	console.error(e)
 });
@@ -80,7 +99,7 @@ const nodeServer = esbuild.context({
 	platform: 'node',
 	entryPoints: ['server/src/node/main.ts'],
 	outfile: 'dist/iec.server.node.js',
-	plugins: [esbuildProblemMatcherPlugin],
+	plugins: [esbuildProblemMatcherPlugin, wasmPlugin, assets],
 }).catch((e) => {
 	console.error(e)
 })

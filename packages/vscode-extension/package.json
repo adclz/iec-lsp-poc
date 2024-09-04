@@ -21,11 +21,9 @@
     "Programming Languages"
   ],
   "activationEvents": [
+    "*",
     "onStartupFinished",
     "onCommand:workbench.action.showAllSymbols"
-  ],
-  "enabledApiProposals": [
-    "extensionsAny"
   ],
   "capabilities": {
     "untrustedWorkspaces": {
@@ -65,7 +63,8 @@
     "lint": "eslint client server --ext ts",
     "deploy": "npx vsce publish --noVerify",
     "pretest-extension": "npx esbuild client/src/test/suite/index.ts --bundle --external:vscode --target=es2020 --format=cjs --outfile=dist/extension.test.js --define:process=\"{\\\"env\\\":{}}\"",
-    "test-server": "cd server && pnpm run test"
+    "test-server": "cd server && pnpm run test",
+    "open-in-browser": "vscode-test-web --headless --port=3010 --extensionDevelopmentPath=. ."
   },
   "devDependencies": {
     "@types/mocha": "^10.0.7",
@@ -75,8 +74,12 @@
     "@typescript-eslint/parser": "^7.11.0",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
+    "@vscode/test-web": "^0.0.57",
     "esbuild": "^0.21.5",
     "eslint": "^8.57.0",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "esbuild-plugin-wasm": "^1.1.0"
   }
 }
