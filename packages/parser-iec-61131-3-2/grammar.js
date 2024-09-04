@@ -8,7 +8,7 @@ const B2 = require("./grammars/B2");
 const B3 = require("./grammars/B3");
 
 module.exports = grammar({
-    name: "IEC61131-3-2",
+    name: "IEC61131_3_2",
 
     externals: $ => [
         $.field_selector,

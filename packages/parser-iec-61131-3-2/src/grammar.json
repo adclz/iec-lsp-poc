@@ -1,5 +1,5 @@
 {
-  "name": "IEC61131",
+  "name": "IEC61131_3_2",
   "word": "identifier",
   "rules": {
     "source_file": {
