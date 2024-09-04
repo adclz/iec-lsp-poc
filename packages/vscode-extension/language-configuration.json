@@ -1,16 +1,80 @@
 {
 	"brackets": [
-		["(", ")"],
+		[
+			"(",
+			")"
+		],
 	],
 	"autoCloseBefore": " \n\t",
 	"surroundingPairs": [
-		["{", "}"],
-		["[", "]"],
-		["(", ")"],
-		["(*", "*)"],
-		["\"", "\""],
-		["'", "'"]
+		[
+			"{",
+			"}"
+		],
+		[
+			"[",
+			"]"
+		],
+		[
+			"(",
+			")"
+		],
+		[
+			"(*",
+			"*)"
+		],
+		[
+			"\"",
+			"\""
+		],
+		[
+			"'",
+			"'"
+		]
 	],
+	"autoClosingPairs": [
+		{
+			"open": "{",
+			"close": "}"
+		},
+		{
+			"open": "[",
+			"close": "]"
+		},
+		{
+			"open": "(",
+			"close": ")"
+		},
+		{
+			"open": "\"",
+			"close": "\"",
+			"notIn": [
+				"string"
+			]
+		},
+		{
+			"open": "'",
+			"close": "'",
+			"notIn": [
+				"string",
+				"comment"
+			]
+		},
+		{
+			"open": "(*",
+			"close": " *",
+			"notIn": [
+				"string"
+			]
+		},
+		{
+			"open": "/*",
+			"close": " */",
+			"notIn": [
+				"string"
+			]
+		},
+	]
 	//"folding": {
 	//	"offSide": true,
 	//	"markers": {
@@ -22,7 +86,6 @@
 	// 	"increaseIndentPattern": "({(?!.+}).*|\\(|\\[|(IF|ELSE|FOR|WHILE|CASE|THEN|ELSIF|DO|BY|OF|REPEAT|).*)\\s*(/[\\(*].*)?$",
 	// 	"decreaseIndentPattern": "^((.*\\*\\/)?|(.*\\*\\)?)\\s*((\\})|(\\)+[;,])|(\\][;,])|\\b(else)|\\b((END_(IF|FOR|WHILE|CASE|REPEAT));))"
 	// }
-
 	//"enhancedBrackets":[
 	// 	{ "openTrigger": "\\s", "open": "VAR", "closeComplete": "END_VAR", "matchCase": true },
 	// 	{ openTrigger: 'e', open: /case$/i, closeComplete: 'end', matchCase: true },
