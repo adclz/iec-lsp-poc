@@ -3,9 +3,9 @@ import { FoldingRangeParams, FoldingRange, FoldingRangeKind } from "vscode-langu
 import { GlobalState } from "../server";
 import { asLspRange, containsRange, symbolMapping } from "../common/calc";
 import { Scope } from "../symbols/definitions";
-import iec61331 from "iec61331-tree-sitter"
+import iec61331 from "../../../parser-iec-61131-3-2/bindings/node"
 
-const workspaceSymbolsProvider = (globalState: GlobalState): (params: FoldingRangeParams) => 
+const workspaceSymbolsProvider = (globalState: GlobalState): (params: FoldingRangeParams) =>
     Promise<FoldingRange[] | null> => {
     const {
         queries,
@@ -23,19 +23,19 @@ const workspaceSymbolsProvider = (globalState: GlobalState): (params: FoldingRan
         const ranges: FoldingRange[] = []
 
         queries.foldingRanges.captures(tree.rootNode)
-        .forEach((capture) => {
-            let kind: FoldingRangeKind | undefined = undefined
-            if (capture.name === "fold.region") kind = FoldingRangeKind.Region
-            if (capture.name === "fold.comment") kind = FoldingRangeKind.Comment
-            ranges.push({
-                startLine: capture.node.startPosition.row,
-                startCharacter: capture.node.startPosition.column,
-                endLine: capture.node.endPosition.row,
-                endCharacter: capture.node.endPosition.column,
-                kind
+            .forEach((capture) => {
+                let kind: FoldingRangeKind | undefined = undefined
+                if (capture.name === "fold.region") kind = FoldingRangeKind.Region
+                if (capture.name === "fold.comment") kind = FoldingRangeKind.Comment
+                ranges.push({
+                    startLine: capture.node.startPosition.row,
+                    startCharacter: capture.node.startPosition.column,
+                    endLine: capture.node.endPosition.row,
+                    endCharacter: capture.node.endPosition.column,
+                    kind
+                })
             })
-        })
-        
+
 
 
 

@@ -2,29 +2,26 @@ import { Diagnostic } from "vscode-languageserver"
 import { ReferenceSymbol } from "./items/symbols/reference"
 import { TypeReferenceSymbol } from "./items/symbols/typeReference"
 import { Item } from "./items/definitions"
-import IntervalTree from "@flatten-js/interval-tree"
-import { search } from "../common/intervals"
 import { VariableScope } from "./items/scopes/variable"
+import { Tree } from "web-tree-sitter"
+import { GapBuffer } from "../common/gap-buffer"
 
-export const solveLazy = function (this: Item, ranges: IntervalTree<Item>): Diagnostic[] | null  {
+export const solveLazy = function (this: Item, tree: Tree, buffer: GapBuffer<Item>): Diagnostic[] | null  {
     const errors: Diagnostic[] = []
 
     this.lazyReferences.forEach(item => {
        const exists = this.findReference(item.getName)
        if (exists) {
-            const ref = new ReferenceSymbol(item.getRange, item.getUri)
+            const ref = new ReferenceSymbol(item.getOffset, item.getUri)
             ref.linkReference(exists)
             exists.addReference(ref)
 
-            const interval = item.getIntervalRange
-            ranges.remove(interval, item)
-
-            ranges.insert(interval, ref)
-            this.addSymbol(ref)
+            buffer.swap(item.getOffset, ref)
+            this.addSymbol(ref, tree)
        } else {
             errors.push({
                  message: `Could not find reference ${item.name}`,
-                 range: item.getRange,
+                 range: item.getRange(tree),
                  severity: 1
             })
        }
@@ -33,19 +30,16 @@ export const solveLazy = function (this: Item, ranges: IntervalTree<Item>): Diag
     this.lazyTypeReferences.forEach(item => {
         const exists = this.findTypeReference(item.getName)
         if (exists) {
-             const ref = new TypeReferenceSymbol(item.getRange, item.getUri)
+             const ref = new TypeReferenceSymbol(item.getOffset, item.getUri)
              ref.linkTypeReference(exists)
              exists.addTypeReference(ref)
 
-             const interval = item.getIntervalRange
-             ranges.remove(interval, item)
-
-             ranges.insert(interval, ref)
-             this.addSymbol(ref)
+             buffer.swap(item.getOffset, ref)
+             this.addSymbol(ref, tree)
         } else {
              errors.push({
                   message: `Could not find type ${item.name}`,
-                  range: item.getRange,
+                  range: item.getRange(tree),
                   severity: 1
              })
         }

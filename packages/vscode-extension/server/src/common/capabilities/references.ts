@@ -7,12 +7,13 @@ import { VariableScope } from "../symbol-table/items/scopes/variable";
 import { TypeReferenceSymbol } from "../symbol-table/items/symbols/typeReference";
 import { Item } from "../symbol-table/items/definitions";
 import { SignatureScope } from "../symbol-table/items/scopes/signature";
+import { Tree } from "web-tree-sitter";
 
 const referencesProvider = (singleTons: SingleTons): (params: ReferenceParams) => Promise<Location[]> => {
     const {
         documents,
         trees,
-        symbols
+        buffers
     } = singleTons
     return async (params) => {
         const doc = documents.get(params.textDocument.uri)!;
@@ -21,13 +22,15 @@ const referencesProvider = (singleTons: SingleTons): (params: ReferenceParams) =
             return [];
         }
 
-        const getSymbols = symbols.get(params.textDocument.uri);
+        const getSymbols = buffers.get(params.textDocument.uri);
         if (!getSymbols) {
             return [];
         }
 
         const offset = doc.offsetAt(params.position);
-        const uniqueSymbol = search(getSymbols.symbols, [offset, offset])
+        let uniqueSymbol;
+        const rt = tree.rootNode.namedDescendantForIndex(offset)
+        uniqueSymbol = getSymbols.buffer.get(rt.startIndex)
 
         if (!uniqueSymbol) {
             return []
@@ -35,7 +38,7 @@ const referencesProvider = (singleTons: SingleTons): (params: ReferenceParams) =
 
         if (uniqueSymbol instanceof ReferenceSymbol) {
             const reference = uniqueSymbol.getLinkedReference!
-            return getAllReferences(params, reference)
+            return getAllReferences(params, reference, tree)
         }
 
         if (uniqueSymbol instanceof TypeReferenceSymbol) {
@@ -48,21 +51,20 @@ const referencesProvider = (singleTons: SingleTons): (params: ReferenceParams) =
             return []
         }
 
-        if (scope instanceof VariableScope) {
-            return getAllReferences(params, scope)
-        }
+        return getAllReferences(params, scope, tree)
+
         return []
     }
 }
 
 export default referencesProvider
 
-const getAllReferences = (params: ReferenceParams, scope: Item) => {
+const getAllReferences = (params: ReferenceParams, scope: Item, tree: Tree) => {
     const references = scope.getReferences
     return references.map((reference) => {
         return {
             uri: params.textDocument.uri,
-            range: reference.getRange
+            range: reference.getRange(tree)
         }
     })
 }

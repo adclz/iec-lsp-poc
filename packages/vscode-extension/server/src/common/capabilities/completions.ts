@@ -1,8 +1,6 @@
 import { Query, SyntaxNode, Tree } from "web-tree-sitter";
 import { CompletionItem, CompletionList, CompletionItemKind, CompletionParams, InsertTextFormat } from "vscode-languageserver";
 import { SingleTons } from "../server";
-import fs from "node:fs";
-import { search } from "../common/intervals";
 import { scopedCompletionProvider } from "../extends/scope-symbols";
 
 /*const grammar = require.resolve("iec61331-tree-sitter/src/grammar.json");
@@ -136,7 +134,7 @@ const completionProvider = (singleTons: SingleTons): (params: CompletionParams) 
     const {
         documents,
         trees,
-        symbols
+        buffers,
     } = singleTons
 
     return async (params) => {
@@ -148,9 +146,7 @@ const completionProvider = (singleTons: SingleTons): (params: CompletionParams) 
 
         const bucket: CompletionItem[] = []
 
-        //bucket.push(...treeSitterCompletion(params, tree))
-
-        const getSymbols = symbols.get(params.textDocument.uri);
+        const getSymbols = buffers.get(params.textDocument.uri);
 
         if (!getSymbols) {
             return bucket;
@@ -158,14 +154,13 @@ const completionProvider = (singleTons: SingleTons): (params: CompletionParams) 
 
         const offset = doc.offsetAt(params.position);
 
-        //console.log("TRIGGERED", offset)
-        let uniqueSymbol = search(getSymbols.symbols, [offset, offset])
+        let uniqueSymbol;
+        const rt = tree.rootNode.descendantForIndex(offset)
+        uniqueSymbol = getSymbols.buffer.get(rt.startIndex)
 
         if (!uniqueSymbol) {
-            return bucket
+            return scopedCompletionProvider(null)
         }
-
-        console.log(uniqueSymbol)
 
         const auto = uniqueSymbol.missingAutoComplete()
         if (auto) {

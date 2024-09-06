@@ -1,3 +1,4 @@
+import { Tree } from "web-tree-sitter";
 import { Item, Symbol } from "../definitions";
 
 type AnyReference =  Item;
@@ -31,8 +32,8 @@ export class ReferenceSymbol extends Symbol {
         return this.referTo?.hoverInfo!
     }
 
-    public getDocumentSymbols(useParent?: boolean) {
-        return this.referTo!.getDocumentSymbols();
+    public getDocumentSymbols(tree: Tree) {
+        return this.referTo!.getDocumentSymbols(tree);
     }
 
     public getCompletionItems() {
@@ -43,7 +44,7 @@ export class ReferenceSymbol extends Symbol {
         return this.referTo?.getSignatureParameters(activeParameter) || null
     }
 
-    public getPrimitiveIdentifier(): string | null {
-        return this.referTo?.getPrimitiveIdentifier() || null
+    public getPrimitiveIdentifier(tree: Tree): string | null {
+        return this.referTo?.getPrimitiveIdentifier(tree) || null
     }
 }

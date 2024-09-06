@@ -10,12 +10,11 @@ import { StructScope } from "./struct";
 import { EnumScope } from "./enum";
 import { PrimitiveSymbol } from "../symbols/primitive";
 import { solveLazy } from "../../lazy";
-import IntervalTree from "@flatten-js/interval-tree";
-import { AssignScope } from "./assign";
-import { referenceMulipleScope } from "./referenceMuliple";
+import { Tree } from "web-tree-sitter";
+import { GapBuffer } from "../../../common/gap-buffer";
 
 // A function return type could be any of the following
-type AllFunctionTypes = TypeReferenceSymbol | ReferenceSymbol | ArrayScope | EnumScope | StructScope |  PrimitiveSymbol;
+type AllFunctionTypes = TypeReferenceSymbol | ReferenceSymbol | ArrayScope | EnumScope | StructScope | PrimitiveSymbol;
 
 
 export class FunctionScope extends Scope {
@@ -24,7 +23,7 @@ export class FunctionScope extends Scope {
     variables: Record<string, VariableScope> = {};
     references: ReferenceSymbol[] = []
 
-    addSymbol(symbol: Item): Diagnostic[] | null {
+    addSymbol(symbol: Item, tree: Tree): Diagnostic[] | null {
         if (symbol instanceof NameSymbol) {
             this.name = symbol;
             symbol.setParent(this);
@@ -43,10 +42,8 @@ export class FunctionScope extends Scope {
             symbol.setParent(this);
             return null;
         }
+        symbol.setParent(this);
 
-        if (symbol instanceof AssignScope) {
-            symbol.setParent(this);
-        }
         return null
 
     }
@@ -74,17 +71,17 @@ ${comment}
         return "Function"
     }
 
-    solveVariable(name: string) {
+    solveVariable(name: string, tree: Tree,) {
         if (this.temp_variable) {
             if (this.variables[name]) {
                 return [
                     {
                         message: `Variable ${name} is declared multiple times`,
-                        range: this.temp_variable.getRange
+                        range: this.temp_variable.getRange(tree)
                     },
                     {
                         message: `Variable ${name} is declared multiple times`,
-                        range: this.variables[name]!.getName!.getRange
+                        range: this.variables[name]!.getName!.getRange(tree)
                     }
                 ] as Diagnostic[];
             } else {
@@ -96,17 +93,17 @@ ${comment}
         return null
     }
 
-    getDocumentSymbols(useParent?: boolean): DocumentSymbol[] {
+    getDocumentSymbols(tree: Tree): DocumentSymbol[] {
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Function,
-            range: useParent ? this.getParent!.getRange : this.getRange,
-            selectionRange: this.name!.getRange,
+            range: this.getRange(tree),
+            selectionRange: this.name!.getRange(tree),
             children: []
         };
 
         Object.values(this.variables).forEach(item => {
-            mainSymbol.children!.push(...item.getDocumentSymbols());
+            mainSymbol.children!.push(...item.getDocumentSymbols(tree));
         });
 
         return [mainSymbol];
@@ -134,7 +131,7 @@ ${comment}
     }
 
     findReference(name: string) {
-        return this.variables[name] || 
+        return this.variables[name] ||
             (this.getParent ? this.getParent.findReference(name) : null);
     }
 
@@ -145,8 +142,8 @@ ${comment}
         return null
     }
 
-    public solveLazy(ranges: IntervalTree<Item>): Diagnostic[] | null {
-        return solveLazy.call(this, ranges)
+    public solveLazy(tree: Tree, buffer: GapBuffer<Item>): Diagnostic[] | null {
+        return solveLazy.call(this, tree, buffer)
     }
 
     getVariables() {

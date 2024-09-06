@@ -7,7 +7,7 @@ const hoverProvider = (singleTons: SingleTons): (params: RenameParams) => Promis
     const {
         documents,
         trees,
-        symbols
+        buffers
     } = singleTons
     return async (params) => {
         const doc = documents.get(params.textDocument.uri)!;
@@ -16,13 +16,13 @@ const hoverProvider = (singleTons: SingleTons): (params: RenameParams) => Promis
             return null;
         }
 
-        const getSymbols = symbols.get(params.textDocument.uri);
+        const getSymbols = buffers.get(params.textDocument.uri);
         if (!getSymbols) {
             return null;
         }
 
         const offset = doc.offsetAt(params.position);
-        const uniqueSymbol = search(getSymbols.symbols, [offset, offset])
+        const uniqueSymbol = getSymbols.buffer.get(offset);
         //console.log(uniqueSymbol)
         if (!uniqueSymbol) {
             return null

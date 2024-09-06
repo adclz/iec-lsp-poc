@@ -2,12 +2,11 @@ import { Diagnostic } from "vscode-languageserver";
 import { NeedTypeCheck, Scope, Item, } from "../definitions";
 import { ReferenceSymbol } from "../symbols/reference";
 import { ExpressionScope } from "./expression";
-import { VariableScope } from "./variable";
-import { PrimitiveSymbol } from "../symbols/primitive";
 import { AnyTypeToGeneric, simpleTypeMap } from "../../../extends/type-checker";
-import IntervalTree from "@flatten-js/interval-tree";
 import { solveLazy } from "../../lazy";
 import { referenceMulipleScope } from "./referenceMuliple";
+import { Tree } from "web-tree-sitter";
+import { GapBuffer } from "../../../common/gap-buffer";
 
 type Assignable = ReferenceSymbol | referenceMulipleScope
 
@@ -15,7 +14,7 @@ export class AssignScope extends Scope implements NeedTypeCheck {
     assign?: Assignable;
     to?: Item;
 
-    addSymbol(symbol: Item) {
+    addSymbol(symbol: Item, tree: Tree) {
         if (symbol instanceof ReferenceSymbol) {
             this.assign = symbol;
             symbol.setParent(this);
@@ -33,24 +32,24 @@ export class AssignScope extends Scope implements NeedTypeCheck {
         return null;
     }
 
-    public typeCheck(): Diagnostic[] | null {
-        const asg = this.assign?.getPrimitiveIdentifier()
+    public typeCheck(tree: Tree): Diagnostic[] | null {
+        const asg = this.assign?.getPrimitiveIdentifier(tree)
         if (asg) {
-            const value = this.to?.getPrimitiveIdentifier()!
+            const value = this.to?.getPrimitiveIdentifier(tree)!
             if (Array.isArray(value)) {
                 return value
             }
-            return simpleTypeMap[asg](value, this.to?.getRange!)
+            return simpleTypeMap[asg](value, this.to?.getRange(tree)!)
         }
         else {
             return [{
                 message: `Cannot assign`,
-                range: this.assign?.getRange
+                range: this.assign?.getRange(tree)
             } as Diagnostic]
         }
     }
 
-    public solveLazy(ranges: IntervalTree<Item>): Diagnostic[] | null {
-        return solveLazy.call(this, ranges)
+    public solveLazy(tree: Tree, buffer: GapBuffer<Item>): Diagnostic[] | null {
+        return solveLazy.call(this, tree, buffer)
     }
 }

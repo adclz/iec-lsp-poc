@@ -3,17 +3,18 @@ import { NameSymbol } from "./symbols/name"
 import { CommentSymbol } from "./symbols/comment"
 import { TypeScope } from "./scopes/type"
 import { VariableScope } from "./scopes/variable"
-import IntervalTree from "@flatten-js/interval-tree"
 import { LazySymbol } from "./symbols/lazy"
 import { TypeReferenceSymbol } from "./symbols/typeReference"
 import { ReferenceSymbol } from "./symbols/reference"
 import { SignatureScope } from "./scopes/signature"
+import { Tree } from "web-tree-sitter"
+import { GapBuffer } from "../../common/gap-buffer"
 
 type TypeReference = TypeScope
 type Reference = VariableScope
 
 export abstract class Item {
-    private range: Range
+    private _offset: number
     private uri: string
     protected parent?: Scope
     private _lazyReferences: LazySymbol[] = []
@@ -23,10 +24,32 @@ export abstract class Item {
     protected signature?: SignatureScope
     protected comment?: CommentSymbol
 
-    constructor(range: Range, uri: string, parent?: Scope) {
-        this.range = range
+    constructor(offset: number, uri: string, parent?: Scope) {
+        this._offset = offset
         this.uri = uri
         this.parent = parent
+    }
+
+    public get getOffset() {
+        return this._offset
+    }
+
+    public set setOffset(offset: number) {
+        this._offset = offset
+    }
+
+    public getRange(tree: Tree): Range {
+        const node = tree.rootNode.namedDescendantForIndex(this._offset)
+        return {
+            start: {
+                line: node.startPosition.row,
+                character: node.startPosition.column
+            },
+            end: {
+                line: node.endPosition.row,
+                character: node.endPosition.column
+            }
+        }
     }
 
     public get getUri() {
@@ -41,7 +64,7 @@ export abstract class Item {
         return "Unknown"
     }
 
-    public addSymbol(symbol: Item): Diagnostic[] | null {
+    public addSymbol(symbol: Item, tree: Tree): Diagnostic[] | null {
         return null
     }
 
@@ -53,11 +76,7 @@ export abstract class Item {
         return this.parent
     }
 
-    public get getRange() {
-        return this.range
-    }
-
-    public getDocumentSymbols(useParent?: boolean): DocumentSymbol[] {
+    public getDocumentSymbols(tree: Tree): DocumentSymbol[] {
         return []
     }
 
@@ -110,7 +129,7 @@ export abstract class Item {
         return null
     }
 
-    public solveLazy(ranges: IntervalTree<Item>): Diagnostic[] | null {
+    public solveLazy(tree: Tree, buffer: GapBuffer<Item>): Diagnostic[] | null {
         return null
     }
 
@@ -138,9 +157,9 @@ export abstract class Item {
         return null
     }
 
-    public getPrimitiveIdentifier(): string | null {
+    public getPrimitiveIdentifier(tree: Tree): string | null {
         return null
-    }   
+    }
 
     public get getComment(): CommentSymbol | undefined {
         return this.comment
@@ -148,7 +167,7 @@ export abstract class Item {
 }
 
 export interface NeedTypeCheck {
-    typeCheck(): Diagnostic[] | null
+    typeCheck(tree: Tree): Diagnostic[] | null
 }
 
 export abstract class Scope extends Item {
@@ -158,7 +177,7 @@ export abstract class Scope extends Item {
         return this.name
     }
 
-    public setName(name: NameSymbol) {  
+    public setName(name: NameSymbol) {
         this.name = name
     }
 

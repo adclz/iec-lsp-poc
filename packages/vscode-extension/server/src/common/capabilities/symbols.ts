@@ -14,7 +14,7 @@ const symbolsProvider = (singleTons: SingleTons): (params: DocumentSymbolParams)
     const {
         queries,
         trees,
-        symbols
+        buffers
     } = singleTons
 
     return async (params) => {
@@ -23,7 +23,7 @@ const symbolsProvider = (singleTons: SingleTons): (params: DocumentSymbolParams)
             return [];
         }
 
-        const docSymbols = symbols.get(params.textDocument.uri);
+        const docSymbols = buffers.get(params.textDocument.uri);
         if (!docSymbols) {
             return []
         }
@@ -33,7 +33,7 @@ const symbolsProvider = (singleTons: SingleTons): (params: DocumentSymbolParams)
         Object.values(items)
             .forEach((item) => {
                 if (item instanceof Scope) {
-                    docs.push(...item.getDocumentSymbols())
+                    docs.push(...item.getDocumentSymbols(tree))
                 }
             })
 

@@ -9,6 +9,7 @@ import { TypeReferenceSymbol } from "../symbols/typeReference";
 import { EnumScope } from "./enum";
 import { PrimitiveSymbol } from "../symbols/primitive";
 import { TypeScope } from "./type";
+import { Tree } from "web-tree-sitter";
 
 type AnyArrayType = TypeReferenceSymbol | PrimitiveSymbol | ArrayScope | EnumScope | StructScope;
 
@@ -18,7 +19,7 @@ export class ArrayScope extends Scope {
     private type?: AnyArrayType
     private defaultValues?: AnyArrayType[]
 
-    addSymbol(symbol: Item): Diagnostic[] | null {
+    addSymbol(symbol: Item, tree: Tree): Diagnostic[] | null {
         if (symbol instanceof NameSymbol) {
             this.name = symbol;
             symbol.setParent(this);
@@ -67,12 +68,12 @@ ${comment}
         return `array<${min}..${max}> of ${type}`
     }
 
-    getDocumentSymbols(useParent?: boolean): DocumentSymbol[] {
+    getDocumentSymbols(tree: Tree): DocumentSymbol[] {
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Array,
-            range: useParent ? this.getParent!.getRange : this.getRange,
-            selectionRange: this.name!.getRange,
+            range: this.getParent!.getRange(tree),
+            selectionRange: this.name!.getRange(tree),
         };
         return [mainSymbol];
     }

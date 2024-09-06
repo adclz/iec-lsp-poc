@@ -3,11 +3,11 @@ import { SignatureHelpParams, SignatureHelp, SignatureInformation } from "vscode
 import { GlobalState } from "../server";
 import { asLspRange, containsRange, symbolMapping } from "../common/calc";
 import { Scope } from "../symbols/definitions";
-import iec61331 from "iec61331-tree-sitter"
+import iec61331 from "../../../parser-iec-61131-3-2/bindings/node"
 import { search } from "../common/intervals";
 import { SignatureScope } from "../symbols/scopes/signature";
 
-const signatureProvider = (globalState: GlobalState): (params: SignatureHelpParams) => 
+const signatureProvider = (globalState: GlobalState): (params: SignatureHelpParams) =>
     Promise<SignatureHelp | null> => {
     const {
         documents,

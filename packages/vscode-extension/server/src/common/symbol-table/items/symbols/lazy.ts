@@ -11,8 +11,8 @@ export class LazySymbol extends Symbol {
     name: string
     intervalRange: [number, number]
 
-    constructor(range: Range, uri: string, intervalRange: [number, number], name: string, kind: LazySymbolKind) {
-        super(range, uri)
+    constructor(offset: number, uri: string, intervalRange: [number, number], name: string, kind: LazySymbolKind) {
+        super(offset, uri)
         this.name = name
         this.intervalRange = intervalRange
         this._kind = kind

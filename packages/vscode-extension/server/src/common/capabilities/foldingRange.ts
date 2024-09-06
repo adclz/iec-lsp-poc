@@ -7,8 +7,6 @@ const workspaceSymbolsProvider = (singleTons: SingleTons): (params: FoldingRange
     const {
         queries,
         trees,
-        symbols,
-        parser
     } = singleTons
 
     return async (params) => {
@@ -32,9 +30,6 @@ const workspaceSymbolsProvider = (singleTons: SingleTons): (params: FoldingRange
                     kind
                 })
             })
-
-
-
 
         return ranges
     }

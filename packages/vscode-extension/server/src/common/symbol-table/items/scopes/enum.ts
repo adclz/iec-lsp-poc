@@ -4,11 +4,12 @@ import { EnumMemberSymbol } from "../symbols/enumMember";
 import { NameSymbol } from "../symbols/name";
 import { CompletionItem, CompletionItemKind, Diagnostic, DocumentSymbol, SymbolKind as DocumentSymbolKind, Range } from "vscode-languageserver";
 import { TypeScope } from "./type";
+import { Tree } from "web-tree-sitter";
 
 export class EnumScope extends Scope {
     private members: EnumMemberSymbol[] = [];
 
-    addSymbol(symbol: Item): Diagnostic[] | null {
+    addSymbol(symbol: Item, tree: Tree): Diagnostic[] | null {
         if (symbol instanceof NameSymbol) {
             this.name = symbol;
             symbol.setParent(this);
@@ -43,31 +44,34 @@ ${comment}
         return `enum`
     }
 
-    getDocumentSymbols(useParent?: boolean): DocumentSymbol[] {
+    getDocumentSymbols(tree: Tree): DocumentSymbol[] {
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Enum,
-            range: useParent ? this.getParent!.getRange : this.getRange,
-            selectionRange: this.name!.getRange,
-            children: this.members.map(member => {
-                return {
-                    name: member.getName!,
-                    kind: DocumentSymbolKind.EnumMember,
-                    range: member.getRange,
-                    selectionRange: member.getRange,
-                }
-            }),
+            range: this.getParent!.getRange(tree),
+            selectionRange: this.name!.getRange(tree),
+            children: this.members
+                .filter(member => member.getName)
+                .map(member => {
+                    return {
+                        name: member.getName!,
+                        kind: DocumentSymbolKind.EnumMember,
+                        range: member.getRange(tree),
+                        selectionRange: member.getRange(tree),
+                    }
+                }),
         };
         return [mainSymbol];
     }
 
     getCompletionItems(): CompletionItem[] {
-        return this.members.map(member => {
-            return {
-                label: member.getName!,
-                kind: CompletionItemKind.EnumMember
-            }
-        })
+        return this.members
+            .map(member => {
+                return {
+                    label: member.getName!,
+                    kind: CompletionItemKind.EnumMember
+                }
+            })
     }
 
     getCompletionItem(): CompletionItem[] {

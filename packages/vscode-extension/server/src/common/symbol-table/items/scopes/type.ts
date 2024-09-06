@@ -7,6 +7,7 @@ import { EnumScope } from "./enum";
 import { StructScope } from "./struct";
 import { TypeReferenceSymbol } from "../symbols/typeReference";
 import { CommentSymbol } from "../symbols/comment";
+import { Tree, TreeCursor } from "web-tree-sitter";
 
 type AnyType = ArrayScope | StructScope | EnumScope | PrimitiveSymbol;
 
@@ -25,7 +26,7 @@ export class TypeScope extends Scope {
     type: AnyType | null = null;
     typeReferences: TypeReferenceSymbol[] = [];
 
-    addSymbol(symbol: Item): Diagnostic[] | null {
+    addSymbol(symbol: Item, tree: Tree): Diagnostic[] | null {
         if (symbol instanceof NameSymbol) {
             this.name = symbol;
             symbol.setParent(this);
@@ -37,7 +38,7 @@ export class TypeScope extends Scope {
         if (symbol instanceof PrimitiveSymbol
             || symbol instanceof ArrayScope || symbol instanceof EnumScope || symbol instanceof StructScope) {
             this.type = symbol;
-            this.type.addSymbol(this.name!)
+            this.type.addSymbol(this.name!, tree)
             symbol.setParent(this);
             return null;
         }
@@ -65,8 +66,8 @@ ${comment}
         return []
     }
 
-    getPrimitiveIdentifier() {
-        return this.type!.getPrimitiveIdentifier()
+    getPrimitiveIdentifier(tree: Tree) {
+        return this.type!.getPrimitiveIdentifier(tree)
     }
 
     get getType() {
@@ -95,9 +96,9 @@ ${comment}
         return this.type?.getSignatureParameters(activeParameter) || null
     }
 
-    public getDocumentSymbols(): DocumentSymbol[] {
+    public getDocumentSymbols(tree: Tree): DocumentSymbol[] {
         if (this.type) {
-            return this.type.getDocumentSymbols(true, this.name);
+            return this.type.getDocumentSymbols(tree, this.name);
         }
         return []
     }

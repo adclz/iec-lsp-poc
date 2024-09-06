@@ -5,12 +5,12 @@ import { TypeReferenceSymbol } from "../symbol-table/items/symbols/typeReference
 import { VariableScope } from "../symbol-table/items/scopes/variable";
 import { ReferenceSymbol } from "../symbol-table/items/symbols/reference";
 
-const typeDefinitionProvider = (singleTons: SingleTons): 
-(params: TypeDefinitionParams) => Promise<Location | Location[] | LocationLink[] | null> => {
+const typeDefinitionProvider = (singleTons: SingleTons):
+    (params: TypeDefinitionParams) => Promise<Location | Location[] | LocationLink[] | null> => {
     const {
         documents,
         trees,
-        symbols
+        buffers
     } = singleTons
     return async (params) => {
         const doc = documents.get(params.textDocument.uri)!;
@@ -19,13 +19,15 @@ const typeDefinitionProvider = (singleTons: SingleTons):
             return [];
         }
 
-        const getSymbols = symbols.get(params.textDocument.uri);
+        const getSymbols = buffers.get(params.textDocument.uri);
         if (!getSymbols) {
             return [];
         }
 
         const offset = doc.offsetAt(params.position);
-        const uniqueSymbol = search(getSymbols.symbols, [offset, offset])
+        let uniqueSymbol;
+        const rt = tree.rootNode.namedDescendantForIndex(offset)
+        uniqueSymbol = getSymbols.buffer.get(rt.startIndex)
 
         if (!uniqueSymbol) {
             return []
@@ -39,7 +41,7 @@ const typeDefinitionProvider = (singleTons: SingleTons):
             if (type) {
                 return {
                     uri: params.textDocument.uri,
-                    range: type!.getRange
+                    range: type!.getRange(tree)
                 }
             }
         }
@@ -48,7 +50,7 @@ const typeDefinitionProvider = (singleTons: SingleTons):
             const type = uniqueSymbol.getLinkedTypeReference
             return {
                 uri: params.textDocument.uri,
-                range: type!.getRange
+                range: type!.getRange(tree)
             }
         }
 
@@ -58,7 +60,7 @@ const typeDefinitionProvider = (singleTons: SingleTons):
             if (typeReference) {
                 return {
                     uri: params.textDocument.uri,
-                    range: typeReference.getRange
+                    range: typeReference.getRange(tree)
                 }
             }
         }

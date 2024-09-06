@@ -3,9 +3,9 @@ import { DocumentSymbol, WorkspaceSymbolParams, Range, SymbolInformation, Worksp
 import { GlobalState } from "../server";
 import { asLspRange, containsRange, symbolMapping } from "../common/calc";
 import { Scope } from "../symbols/definitions";
-import iec61331 from "iec61331-tree-sitter"
+import iec61331 from "../../../parser-iec-61131-3-2/bindings/node"
 
-const workspaceSymbolsProvider = (globalState: GlobalState): (params: WorkspaceSymbolParams) => 
+const workspaceSymbolsProvider = (globalState: GlobalState): (params: WorkspaceSymbolParams) =>
     Promise<SymbolInformation[] | WorkspaceSymbol[] | null> => {
     const {
         queries,
@@ -31,7 +31,7 @@ const workspaceSymbolsProvider = (globalState: GlobalState): (params: WorkspaceS
                             if (item["name"]) {
                                 workspaceSymbols.push(
                                     ...item.getDocumentSymbols()
-                                    .map((sym) => WorkspaceSymbol.create(sym.name, sym.kind, uri, sym.range))
+                                        .map((sym) => WorkspaceSymbol.create(sym.name, sym.kind, uri, sym.range))
                                 )
                             }
                         })

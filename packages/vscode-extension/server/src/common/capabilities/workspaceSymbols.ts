@@ -9,7 +9,7 @@ const workspaceSymbolsProvider = (singleTons: SingleTons): (params: WorkspaceSym
     const {
         language,
         trees,
-        symbols,
+        buffers,
         parser
     } = singleTons
 
@@ -23,13 +23,13 @@ const workspaceSymbolsProvider = (singleTons: SingleTons): (params: WorkspaceSym
         trees.forEach((tree, uri) => {
             identifierQuery.captures(tree.rootNode).forEach((capture) => {
                 if (capture.node.text.includes(query)) {
-                    const symTable = symbols.get(uri)
+                    const symTable = buffers.get(uri)
                     if (symTable) {
                         Object.values(symTable.items).forEach((item) => {
                             //@ts-ignore
                             if (item["name"]) {
                                 workspaceSymbols.push(
-                                    ...item.getDocumentSymbols()
+                                    ...item.getDocumentSymbols(tree)
                                         .map((sym) => WorkspaceSymbol.create(sym.name, sym.kind, uri, sym.range))
                                 )
                             }

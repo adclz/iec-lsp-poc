@@ -9,7 +9,7 @@ const signatureProvider = (singleTons: SingleTons): (params: SignatureHelpParams
     const {
         documents,
         trees,
-        symbols,
+        buffers,
         parser
     } = singleTons
 
@@ -20,13 +20,13 @@ const signatureProvider = (singleTons: SingleTons): (params: SignatureHelpParams
             return null;
         }
 
-        const getSymbols = symbols.get(params.textDocument.uri);
+        const getSymbols = buffers.get(params.textDocument.uri);
         if (!getSymbols) {
             return null;
         }
 
         const offset = doc.offsetAt(params.position);
-        const uniqueSymbol = search(getSymbols.symbols, [offset, offset])
+        const uniqueSymbol = getSymbols.buffer.get(offset);
 
         if (!uniqueSymbol) {
             return null

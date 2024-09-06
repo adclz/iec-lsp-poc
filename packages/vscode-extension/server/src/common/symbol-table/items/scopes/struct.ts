@@ -4,12 +4,13 @@ import { CompletionItem, CompletionItemKind, Diagnostic, DocumentSymbol, SymbolK
 import { CommentSymbol } from "../symbols/comment";
 import { TypeScope } from "./type";
 import { FieldScope } from "./field";
+import { Tree } from "web-tree-sitter";
 
 export class StructScope extends Scope {
     temp_field?: FieldScope
     fields: Record<string, FieldScope> = {}
 
-    addSymbol(symbol: Item) {
+    addSymbol(symbol: Item, tree: Tree) {
         if (symbol instanceof NameSymbol) {
             this.name = symbol;
             symbol.setParent(this);
@@ -74,17 +75,17 @@ ${comment}
         return `struct`
     }
 
-    getDocumentSymbols(useParent?: boolean): DocumentSymbol[] {
+    getDocumentSymbols(tree: Tree): DocumentSymbol[] {
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Struct,
-            range: useParent ? this.getParent!.getRange : this.getRange,
-            selectionRange: this.name!.getRange,
+            range: this.getParent!.getRange(tree),
+            selectionRange: this.name!.getRange(tree),
             children: []
         };
 
         Object.values(this.fields).forEach(field => {
-            mainSymbol.children!.push(...field.getDocumentSymbols());
+            mainSymbol.children!.push(...field.getDocumentSymbols(tree));
         });
 
         return [mainSymbol];
@@ -111,8 +112,7 @@ ${comment}
 
     public getSignatureParameters(activeParameter?: number): SignatureHelp {
         const is = (index: number) => activeParameter === index ? "**" : ""
-        const documentation = `${this.name?.getName}(${
-            Object.entries(this.fields)
+        const documentation = `${this.name?.getName}(${Object.entries(this.fields)
             .map(([name, field], index) => `${is(index)}${name} := ${field.getTypeName}${is(index)}`)
             .join(", ")})`
         return {

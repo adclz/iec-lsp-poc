@@ -8,14 +8,13 @@ const hoverProvider = (singleTons: SingleTons): (params: SelectionRangeParams) =
     const {
         documents,
         trees,
-        symbols
     } = singleTons
     return async (params) => {
         const document =  documents.get(params.textDocument.uri);
         if (!document) {
             return [];
         }
-		const tree = await trees.get(document.uri);
+		const tree = trees.get(document.uri);
 		if (!tree) {
 			return [];
 		}

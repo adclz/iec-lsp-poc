@@ -11,7 +11,7 @@ import { findTypeScope, TypeScope } from "../symbol-table/items/scopes/type";
 const highlightProvider = (singleTons: SingleTons): (params: DocumentHighlightParams) => Promise<DocumentHighlight[]> => {
     const {
         documents,
-        symbols,
+        buffers,
         trees
     } = singleTons
 
@@ -22,13 +22,16 @@ const highlightProvider = (singleTons: SingleTons): (params: DocumentHighlightPa
             return [];
         }
 
-        const getSymbols = symbols.get(params.textDocument.uri);
+        const getSymbols = buffers.get(params.textDocument.uri);
         if (!getSymbols) {
             return [];
         }
 
         const offset = doc.offsetAt(params.position);
-        const uniqueSymbol = search(getSymbols.symbols, [offset, offset])
+        let uniqueSymbol;
+        const rt = tree.rootNode.namedDescendantForIndex(offset)
+        uniqueSymbol = getSymbols.buffer.get(rt.startIndex)
+
         if (!uniqueSymbol) {
             return []
         }
@@ -43,10 +46,10 @@ const highlightProvider = (singleTons: SingleTons): (params: DocumentHighlightPa
                 const references = reference.getReferences
                 return [
                     {
-                        range: reference.getRange,
+                        range: reference.getRange(tree),
                         kind: DocumentHighlightKind.Text
                     }, ...references.map((reference) => ({
-                        range: reference.getRange,
+                        range: reference.getRange(tree),
                         kind: DocumentHighlightKind.Write
                     }))]
             }
@@ -55,13 +58,13 @@ const highlightProvider = (singleTons: SingleTons): (params: DocumentHighlightPa
         if (uniqueSymbol instanceof TypeReferenceSymbol) {
             const reference = uniqueSymbol.getLinkedTypeReference
             if (reference) {
-                const references = reference.getReferences
+                const references = reference.getTypeReferences
                 return [
                     {
-                        range: uniqueSymbol.getRange,
+                        range: uniqueSymbol.getRange(tree),
                         kind: DocumentHighlightKind.Text
                     }, ...references.map((reference) => ({
-                        range: reference.getRange,
+                        range: reference.getRange(tree),
                         kind: DocumentHighlightKind.Write
                     }))]
             }
@@ -70,15 +73,15 @@ const highlightProvider = (singleTons: SingleTons): (params: DocumentHighlightPa
         const parent = uniqueSymbol.getParent
 
         const type = findTypeScope(uniqueSymbol)
-        
+
         if (type) {
             const references = type.getReferences
             return [
                 {
-                    range: type.getRange,
+                    range: type.getRange(tree),
                     kind: DocumentHighlightKind.Text
                 }, ...references.map((reference) => ({
-                    range: reference.getRange,
+                    range: reference.getRange(tree),
                     kind: DocumentHighlightKind.Write
                 }))]
         }
@@ -87,10 +90,10 @@ const highlightProvider = (singleTons: SingleTons): (params: DocumentHighlightPa
             const references = parent.getReferences
             return [
                 {
-                    range: parent.getRange,
+                    range: parent.getRange(tree),
                     kind: DocumentHighlightKind.Text
                 }, ...references.map((reference) => ({
-                    range: reference.getRange,
+                    range: reference.getRange(tree),
                     kind: DocumentHighlightKind.Write
                 }))]
         }

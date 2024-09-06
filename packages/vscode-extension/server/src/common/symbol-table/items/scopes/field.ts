@@ -5,11 +5,12 @@ import { CompletionItem, CompletionItemKind, Diagnostic, DocumentSymbol, SymbolK
 import { ReferenceSymbol } from "../symbols/reference";
 import { ValueSymbol } from "../symbols/value";
 import { TypeReferenceSymbol } from "../symbols/typeReference";
-import {  ArrayScope } from "./array";
+import { ArrayScope } from "./array";
 import { EnumScope } from "./enum";
 import { StructScope } from "./struct";
 import { PrimitiveSymbol } from "../symbols/primitive";
 import { FunctionScope } from "./function";
+import { Tree } from "web-tree-sitter";
 
 // A variable could be any of the following
 type AnyFieldType = TypeReferenceSymbol | ReferenceSymbol | ArrayScope | EnumScope | StructScope | PrimitiveSymbol;
@@ -18,7 +19,7 @@ export class FieldScope extends Scope {
     private type?: AnyFieldType;
     private value?: ValueSymbol;
 
-    addSymbol(symbol: Item): Diagnostic[] | null {
+    addSymbol(symbol: Item, tree: Tree): Diagnostic[] | null {
         if (symbol instanceof NameSymbol) {
             this.name = symbol;
             symbol.setParent(this);
@@ -70,12 +71,12 @@ ${comment}
         return codeSnippet;
     }
 
-    getDocumentSymbols(useParent?: boolean): DocumentSymbol[] {
+    getDocumentSymbols(tree: Tree): DocumentSymbol[] {
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Variable,
-            range: useParent ? this.getParent!.getRange : this.getRange,
-            selectionRange: this.name!.getRange,
+            range: this.getParent!.getRange(tree),
+            selectionRange: this.name!.getRange(tree),
         };
         return [mainSymbol];
     }
@@ -89,7 +90,7 @@ ${comment}
         ];
     }
 
-    getPrimitiveIdentifier() {
-        return this.type? this.type.getPrimitiveIdentifier() : null
+    getPrimitiveIdentifier(tree: Tree) {
+        return this.type ? this.type.getPrimitiveIdentifier(tree) : null
     }
 }

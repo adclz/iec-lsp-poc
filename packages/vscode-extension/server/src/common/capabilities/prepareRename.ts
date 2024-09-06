@@ -4,11 +4,11 @@ import { SingleTons } from "../server";
 import { search } from "../common/intervals";
 
 const hoverProvider = (singleTons: SingleTons): (params: PrepareRenameParams) =>
-     Promise<Range | { range: Range, placeholder: string } | { defaultBehavior: boolean } | null> => {
+    Promise<Range | { range: Range, placeholder: string } | { defaultBehavior: boolean } | null> => {
     const {
         documents,
         trees,
-        symbols
+        buffers
     } = singleTons
     return async (params) => {
         const doc = documents.get(params.textDocument.uri)!;
@@ -17,13 +17,13 @@ const hoverProvider = (singleTons: SingleTons): (params: PrepareRenameParams) =>
             return null;
         }
 
-        const getSymbols = symbols.get(params.textDocument.uri);
+        const getSymbols = buffers.get(params.textDocument.uri);
         if (!getSymbols) {
             return null;
         }
 
         const offset = doc.offsetAt(params.position);
-        const uniqueSymbol = search(getSymbols.symbols, [offset, offset])
+        const uniqueSymbol = getSymbols.buffer.get(offset);
         //console.log(uniqueSymbol)
         if (!uniqueSymbol) {
             return null

@@ -3,25 +3,22 @@ import { Item, Symbol } from "../definitions";
 import { NameSymbol } from "./name";
 import { PrimitiveTypesDefinitions } from "../../../extends/completionsKind";
 import { AnyTypeToGeneric } from "../../../extends/type-checker";
+import { Tree } from "web-tree-sitter";
 
 export class PrimitiveSymbol extends Symbol {
     type: string
 
-    constructor(range: Range, uri: string, type: string) {
-        super(range, uri)
+    constructor(offset: number, uri: string, type: string) {
+        super(offset, uri)
         this.type = type
     }
 
-    public addSymbol(symbol: Item): Diagnostic[] | null {
-        return null
-    }
-
-    public getDocumentSymbols(useParent?: boolean, name?: NameSymbol): DocumentSymbol[] {
+    public getDocumentSymbols(tree: Tree, name?: NameSymbol): DocumentSymbol[] {
         return [{
             name: name?.getName!,
             kind: DocumentSymbolKind.Field,
-            range: useParent ? this.getParent!.getRange : this.getRange,
-            selectionRange: name!.getRange!,
+            range: this.getParent!.getRange(tree),
+            selectionRange: name!.getRange(tree),
             children: []
         }]
     }

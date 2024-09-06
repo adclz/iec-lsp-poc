@@ -1,5 +1,4 @@
 import { Scope, Item } from "./items/definitions"
-import IntervalTree from "@flatten-js/interval-tree";
 import { Diagnostic, Range } from "vscode-languageserver";
 import { simpleTypeMap } from "../extends/type-checker";
 import { ArrayScope } from "./items/scopes/array";
@@ -25,53 +24,50 @@ import { QueryCapture } from "web-tree-sitter";
 
 export type BinderResult = { err?: Diagnostic, item?: Item, lazyItem?: boolean, typeCheck?: boolean }
 
-export const create = (query: QueryCapture, ranges: IntervalTree<Item>, uri: string, lspRange: Range)
+export const binder = (query: QueryCapture, uri: string)
     : BinderResult => {
     let result: BinderResult = {}
 
-    if (query.name === "function") result.item = new FunctionScope(lspRange, uri)
-    if (query.name === "variable") {result.item = new VariableScope(lspRange, uri); result.typeCheck = true}
-    if (query.name === "enum") result.item = new EnumScope(lspRange, uri)
-    if (query.name === "array") result.item = new ArrayScope(lspRange, uri)
-    if (query.name === "struct") result.item = new StructScope(lspRange, uri)
-    if (query.name === "field") result.item = new FieldScope(lspRange, uri)
-    if (query.name === "array.min") result.item = new ArrayMinSymbol(lspRange, uri, parseInt(query.node.text))
-    if (query.name === "array.max") result.item = new ArrayMaxSymbol(lspRange, uri, parseInt(query.node.text))
-    if (query.name === "operator") result.item = new OperatorSymbol(lspRange, uri, query.node.text)
-    if (query.name === "enumMember") result.item = new EnumMemberSymbol(lspRange, uri, query.node.text)
-    if (query.name === "assign") result.item = new AssignScope(lspRange, uri)
-    if (query.name === "value") result.item = new ValueSymbol(lspRange, uri, query.node.text)
-    if (query.name === "name") result.item = new NameSymbol(lspRange, uri, query.node.text)
-    if (query.name === "type") result.item = new TypeScope(lspRange, uri)
-    if (query.name === "expression") {result.item = new ExpressionScope(lspRange, uri); result.typeCheck = true}
-    if (query.name === "lazy.reference.multi") result.item = new referenceMulipleScope(lspRange, uri)
-    if (query.name === "assign") {result.item = new AssignScope(lspRange, uri); result.typeCheck = true}
-    if (query.name === "signature") {
-        result.item = new SignatureScope(lspRange, uri)
+    // TODO: eventually convert to switch 
+    if (query.name === "function") result.item = new FunctionScope(query.node.startIndex, uri)
+    else if (query.name === "variable") { result.item = new VariableScope(query.node.startIndex, uri); result.typeCheck = true }
+    else if (query.name === "enum") result.item = new EnumScope(query.node.startIndex, uri)
+    else if (query.name === "array") result.item = new ArrayScope(query.node.startIndex, uri)
+    else if (query.name === "struct") result.item = new StructScope(query.node.startIndex, uri)
+    else if (query.name === "field") result.item = new FieldScope(query.node.startIndex, uri)
+    else if (query.name === "array.min") result.item = new ArrayMinSymbol(query.node.startIndex, uri, parseInt(query.node.text))
+    else if (query.name === "array.max") result.item = new ArrayMaxSymbol(query.node.startIndex, uri, parseInt(query.node.text))
+    else if (query.name === "operator") result.item = new OperatorSymbol(query.node.startIndex, uri, query.node.text)
+    else if (query.name === "enumMember") result.item = new EnumMemberSymbol(query.node.startIndex, uri, query.node.text)
+    else if (query.name === "assign") result.item = new AssignScope(query.node.startIndex, uri)
+    else if (query.name === "value") result.item = new ValueSymbol(query.node.startIndex, uri, query.node.text)
+    else if (query.name === "name") result.item = new NameSymbol(query.node.startIndex, uri, query.node.text)
+    else if (query.name === "type") result.item = new TypeScope(query.node.startIndex, uri)
+    else if (query.name === "expression") { result.item = new ExpressionScope(query.node.startIndex, uri); result.typeCheck = true }
+    else if (query.name === "lazy.reference.multi") result.item = new referenceMulipleScope(query.node.startIndex, uri)
+    else if (query.name === "assign") { result.item = new AssignScope(query.node.startIndex, uri); result.typeCheck = true }
+    else if (query.name === "signature") {
+        result.item = new SignatureScope(query.node.startIndex, uri)
         result.lazyItem = true
     }
-        
-    if (query.name === "lazy.type") {
+
+    else if (query.name === "lazy.type") {
         const name = query.node.text;
         // check if type is primitive
         const isSimpleType = simpleTypeMap[name];
         if (typeof isSimpleType !== "undefined") {
-            result.item = new PrimitiveSymbol(lspRange, uri, name)
+            result.item = new PrimitiveSymbol(query.node.startIndex, uri, name)
         }
         // check if a type has the same name
         else {
-            result.item = new LazySymbol(lspRange, uri, [query.node.startIndex, query.node.endIndex], query.node.text, LazySymbolKind.TypeReference)
+            result.item = new LazySymbol(query.node.startIndex, uri, [query.node.startIndex, query.node.endIndex], query.node.text, LazySymbolKind.TypeReference)
             result.lazyItem = true
         }
     }
 
-    if (query.name === "lazy.reference") {
-        result.item = new LazySymbol(lspRange, uri, [query.node.startIndex, query.node.endIndex], query.node.text, LazySymbolKind.Reference)
+    else if (query.name === "lazy.reference") {
+        result.item = new LazySymbol(query.node.startIndex, uri, [query.node.startIndex, query.node.endIndex], query.node.text, LazySymbolKind.Reference)
         result.lazyItem = true
-    }
-
-    if (result.item) {
-        ranges.insert([query.node.startIndex, query.node.endIndex], result.item)
     }
     return result
 }

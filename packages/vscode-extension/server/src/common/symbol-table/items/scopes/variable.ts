@@ -12,9 +12,10 @@ import { PrimitiveSymbol } from "../symbols/primitive";
 import { FunctionScope } from "./function";
 import { SignatureScope } from "./signature"
 import { solveLazy } from "../../lazy"
-import IntervalTree from "@flatten-js/interval-tree";
 import { simpleTypeMap } from "../../../extends/type-checker";
 import { PrimitiveTypesDefinitions } from "../../../extends/completionsKind";
+import { Tree } from "web-tree-sitter";
+import { GapBuffer } from "../../../common/gap-buffer";
 
 // A variable could be any of the following
 type AllVariableTypes = TypeReferenceSymbol | ReferenceSymbol | ArrayScope | EnumScope | StructScope | PrimitiveSymbol;
@@ -23,12 +24,12 @@ export class VariableScope extends Scope implements NeedTypeCheck {
     private type?: AllVariableTypes;
     private value?: ValueSymbol;
 
-    addSymbol(symbol: Item): Diagnostic[] | null {
+    addSymbol(symbol: Item, tree: Tree): Diagnostic[] | null {
         if (symbol instanceof NameSymbol) {
             this.name = symbol;
             symbol.setParent(this);
             if (this.getParent instanceof FunctionScope) {
-                return this.getParent.solveVariable(symbol.getName);
+                return this.getParent.solveVariable(symbol.getName, tree);
             }
         }
         if (symbol instanceof CommentSymbol) {
@@ -78,12 +79,12 @@ ${comment}
         return `${type} ${value ? `= ${value}` : ''}`
     }
 
-    getDocumentSymbols(useParent?: boolean): DocumentSymbol[] {
+    getDocumentSymbols(tree: Tree): DocumentSymbol[] {
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Variable,
-            range: useParent ? this.getParent!.getRange : this.getRange,
-            selectionRange: this.name!.getRange,
+            range: this.getRange(tree),
+            selectionRange: this.name!.getRange(tree),
         };
         return [mainSymbol];
     }
@@ -113,22 +114,22 @@ ${comment}
         return null
     }
 
-    public solveLazy(ranges: IntervalTree<Item>): Diagnostic[] | null {
-        return solveLazy.call(this, ranges)
+    public solveLazy(tree: Tree, buffer: GapBuffer<Item>): Diagnostic[] | null {
+        return solveLazy.call(this, tree, buffer)
     }
 
     get getReferences() {
         return this._references;
     }
 
-    typeCheck(): Diagnostic[] | null {
+    typeCheck(tree: Tree): Diagnostic[] | null {
         if (this.type instanceof PrimitiveSymbol) {
             if (this.value) {
                 const value = this.value.getPrimitiveIdentifier()!
                 if (Array.isArray(value)) {
                     return value
                 }
-                return simpleTypeMap[this.type!.type!]!(value, this.value.getRange!)
+                return simpleTypeMap[this.type!.type!]!(value, this.value.getRange(tree))
             }
         }
         if (this.type instanceof TypeReferenceSymbol) {
@@ -138,17 +139,17 @@ ${comment}
                 if (this.value) {
                     const value = parseInt(this.value.value!)
                     if (isNaN(value)) {
-                        return [Diagnostic.create(this.value.getRange, `Invalid value for enum ${type.getName?.getName}`, 1)]
+                        return [Diagnostic.create(this.value.getRange(tree), `Invalid value for enum ${type.getName?.getName}`, 1)]
                     }
-                    else return type.checkEnumRange(value, this.value.getRange)
+                    else return type.checkEnumRange(value, this.value.getRange(tree))
                 }
             }
         }
         return null
     }
 
-    getPrimitiveIdentifier() {
-        return this.type?.getPrimitiveIdentifier() || null
+    getPrimitiveIdentifier(tree: Tree) {
+        return this.type?.getPrimitiveIdentifier(tree) || null
     }
 
     getType() {

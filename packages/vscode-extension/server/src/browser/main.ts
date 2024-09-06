@@ -4,6 +4,6 @@ import { startServer } from '../common/server';
 const messageReader = new BrowserMessageReader(self);
 const messageWriter = new BrowserMessageWriter(self);
 
-const connection = createConnection(messageReader, messageWriter);
+const connection = createConnection(messageReader, messageWriter, {});
 
 startServer(connection);

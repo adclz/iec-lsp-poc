@@ -1,10 +1,10 @@
 import { Diagnostic } from "vscode-languageserver";
 import { Scope, Item } from "../definitions";
 import { ReferenceSymbol } from "../symbols/reference";
-import { TypeReferenceSymbol } from "../symbols/typeReference";
 import { ValueSymbol } from "../symbols/value";
-import IntervalTree from "@flatten-js/interval-tree";
 import { CommentSymbol } from "../symbols/comment";
+import { Tree } from "web-tree-sitter";
+import { GapBuffer } from "../../../common/gap-buffer";
 
 
 export class SignatureScope extends Scope {
@@ -28,7 +28,7 @@ export class SignatureScope extends Scope {
         return this.referTo?.getComment
     }
 
-    public addSymbol(symbol: Item): Diagnostic[] | null {
+    public addSymbol(symbol: Item, tree: Tree): Diagnostic[] | null {
         if (symbol instanceof ReferenceSymbol) {
             this.parametersType.push(symbol)
             symbol.setParent(this)
@@ -50,25 +50,22 @@ export class SignatureScope extends Scope {
         this.referTo = symbol
     }
 
-    public solveLazy(ranges: IntervalTree<Item>): Diagnostic[] | null {
+    public solveLazy(tree: Tree, buffer: GapBuffer<Item>): Diagnostic[] | null {
         const errors: Diagnostic[] = []
 
         this.lazyReferences.forEach(item => {
             const exists = this.referTo!.findField(item.getName)
             if (exists) {
-                const ref = new ReferenceSymbol(item.getRange, item.getUri)
+                const ref = new ReferenceSymbol(item.getOffset, item.getUri)
                 ref.linkReference(exists)
                 exists.addReference(ref)
 
-                const interval = item.getIntervalRange
-                ranges.remove(interval, item)
-
-                ranges.insert(interval, ref)
-                this.addSymbol(ref)
+                buffer.swap(item.getOffset, ref)
+                this.addSymbol(ref, tree)
             } else {
                 errors.push({
                     message: `Could not find reference ${item.name} in ${this.referTo?.getTypeName}`,
-                    range: item.getRange,
+                    range: item.getRange(tree),
                     severity: 1
                 })
             }

@@ -17,19 +17,19 @@ const FunctionsCompletion: CompletionItem[] = [
     }]
 
 const STsCompletion: CompletionItem[] = [
-        {
-            label: "IF ... ",
-            kind: CompletionItemKind.Snippet,
-            insertTextFormat: InsertTextFormat.Snippet,
-            insertText: "IF ${1:condition} THEN : ${2:;} \n\nEND_IF"
-        }]    
+    {
+        label: "IF ... ",
+        kind: CompletionItemKind.Snippet,
+        insertTextFormat: InsertTextFormat.Snippet,
+        insertText: "IF ${1:condition} THEN : ${2:;} \n\nEND_IF"
+    }]
 
 const VariablesCompletions: CompletionItem[] = [
     {
         label: "VAR ... ",
         kind: CompletionItemKind.Snippet,
         insertTextFormat: InsertTextFormat.Snippet,
-        insertText: "VAR RETAIN\n  ${1:VarName} : ${2:INT};\nEND_VAR"
+        insertText: "VAR\n  ${1:VarName} : ${2:INT};\nEND_VAR"
     },
     {
         label: "VAR_INPUT ... END_VAR",
@@ -63,7 +63,7 @@ export const scopedCompletionProvider = (scope: Item | null) => {
         if (scope instanceof FunctionScope) {
             return [...VariablesCompletions, ...STsCompletion]
         }
+        else return []
     }
-
     return FunctionsCompletion
 }

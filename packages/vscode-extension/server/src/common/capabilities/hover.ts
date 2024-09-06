@@ -7,7 +7,7 @@ const hoverProvider = (singleTons: SingleTons): (params: HoverParams) => Promise
     const {
         documents,
         trees,
-        symbols
+        buffers
     } = singleTons
     return async (params) => {
         const doc = documents.get(params.textDocument.uri)!;
@@ -16,19 +16,19 @@ const hoverProvider = (singleTons: SingleTons): (params: HoverParams) => Promise
             return null;
         }
 
-        const getSymbols = symbols.get(params.textDocument.uri);
+        const getSymbols = buffers.get(params.textDocument.uri);
         if (!getSymbols) {
             return null;
         }
 
         const offset = doc.offsetAt(params.position);
-        const uniqueSymbol = search(getSymbols.symbols, [offset, offset])
+        let uniqueSymbol;
+        const rt = tree.rootNode.namedDescendantForIndex(offset)
+        uniqueSymbol = getSymbols.buffer.get(rt.startIndex)
 
         if (!uniqueSymbol) {
             return null
         }
-
-        //console.log(uniqueSymbol)
 
         // Only symbols can be hovered
         if (uniqueSymbol instanceof Scope) {

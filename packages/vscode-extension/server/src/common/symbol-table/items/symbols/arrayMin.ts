@@ -4,8 +4,8 @@ import { Symbol } from "../definitions";
 export class ArrayMinSymbol extends Symbol {
     value: number
 
-    constructor(range: Range, uri: string, value: number) {
-        super(range, uri)
+    constructor(offset: number, uri: string, value: number) {
+        super(offset, uri)
         this.value = value
     }
 }

@@ -5,8 +5,8 @@ import { EnumScope } from "../scopes/enum";
 export class EnumMemberSymbol extends Symbol {
     name: string
 
-    constructor(range: Range, uri: string, name: string) {
-        super(range, uri)
+    constructor(offset: number, uri: string, name: string) {
+        super(offset, uri)
         this.name = name
     }
 

@@ -1,16 +1,16 @@
-import IntervalTree from "@flatten-js/interval-tree";
 import { Scope, Item } from "../definitions";
 import { CompletionItem, CompletionItemKind, Diagnostic } from "vscode-languageserver";
 import { VariableScope } from "./variable";
 import { TypeScope } from "./type";
+import { GapBuffer } from "../../../common/gap-buffer";
 
 export class GlobalScope extends Scope {
-    symbols: IntervalTree<Item>
+    buffer: GapBuffer<Item>
     items: Record<string, Item> = {}
 
-    constructor(range: any, uri: string, symbols: IntervalTree<Item>) {
-        super(range, uri)
-        this.symbols = symbols
+    constructor(uri: string, buffer: GapBuffer<Item>) {
+        super(0, uri)
+        this.buffer = buffer
     }
 
     public getCompletionItems(): CompletionItem[] {

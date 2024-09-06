@@ -4,8 +4,8 @@ import { Symbol } from "../definitions";
 export class CommentSymbol extends Symbol {
     value: string
 
-    constructor(range: Range, uri: string, value: string) {
-        super(range, uri)
+    constructor(offset: number, uri: string, value: string) {
+        super(offset, uri)
         this.value = value
     }
 
