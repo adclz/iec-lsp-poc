@@ -1,7 +1,6 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { HoverParams, Hover, MarkupKind, SelectionRangeParams, SelectionRange } from "vscode-languageserver";
 import { SingleTons } from "../server";
-import { search } from "../common/intervals";
 import { asLspRange } from "../common/common";
 
 const hoverProvider = (singleTons: SingleTons): (params: SelectionRangeParams) => Promise<SelectionRange[] | null> => {

@@ -1,6 +1,5 @@
 import { HoverParams, Hover, MarkupKind } from "vscode-languageserver";
 import { SingleTons } from "../server";
-import { search } from "../common/intervals";
 import { Scope } from "../symbol-table/items/definitions";
 
 const hoverProvider = (singleTons: SingleTons): (params: HoverParams) => Promise<Hover | null> => {

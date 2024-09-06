@@ -1,7 +1,6 @@
 import { DocumentHighlightParams, DocumentHighlightKind, DocumentHighlight } from "vscode-languageserver";
 import { SingleTons } from "../server";
 import { asLspRange } from "../common/common";
-import { search } from "../common/intervals";
 import { CommentSymbol } from "../symbol-table/items/symbols/comment";
 import { ReferenceSymbol } from "../symbol-table/items/symbols/reference";
 import { VariableScope } from "../symbol-table/items/scopes/variable";

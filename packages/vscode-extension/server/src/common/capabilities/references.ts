@@ -1,7 +1,6 @@
 import { ReferenceParams, Location } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { SingleTons } from "../server";
-import { search } from "../common/intervals";
 import { ReferenceSymbol } from "../symbol-table/items/symbols/reference";
 import { VariableScope } from "../symbol-table/items/scopes/variable";
 import { TypeReferenceSymbol } from "../symbol-table/items/symbols/typeReference";

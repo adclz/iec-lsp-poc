@@ -1,6 +1,5 @@
 import { TypeDefinitionParams, Hover, MarkupKind, LocationLink, Location } from "vscode-languageserver";
 import { SingleTons } from "../server";
-import { search } from "../common/intervals";
 import { TypeReferenceSymbol } from "../symbol-table/items/symbols/typeReference";
 import { VariableScope } from "../symbol-table/items/scopes/variable";
 import { ReferenceSymbol } from "../symbol-table/items/symbols/reference";

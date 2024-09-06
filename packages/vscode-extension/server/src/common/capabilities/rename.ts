@@ -1,7 +1,6 @@
 import { Query, QueryCapture } from "tree-sitter";
 import { RenameParams, WorkspaceEdit } from "vscode-languageserver";
 import { SingleTons } from "../server";
-import { search } from "../common/intervals";
 
 const hoverProvider = (singleTons: SingleTons): (params: RenameParams) => Promise<WorkspaceEdit | null> => {
     const {

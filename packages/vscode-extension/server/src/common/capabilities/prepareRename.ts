@@ -1,7 +1,6 @@
 import { Query, QueryCapture } from "tree-sitter";
 import { PrepareRenameParams, Range, WorkspaceEdit } from "vscode-languageserver";
 import { SingleTons } from "../server";
-import { search } from "../common/intervals";
 
 const hoverProvider = (singleTons: SingleTons): (params: PrepareRenameParams) =>
     Promise<Range | { range: Range, placeholder: string } | { defaultBehavior: boolean } | null> => {

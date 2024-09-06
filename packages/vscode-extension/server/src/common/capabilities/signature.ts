@@ -1,7 +1,6 @@
 import { SignatureHelpParams, SignatureHelp, SignatureInformation } from "vscode-languageserver";
 import { SingleTons } from "../server";
 import { asLspRange, containsRange, symbolMapping } from "../common/common";
-import { search } from "../common/intervals";
 import { SignatureScope } from "../symbol-table/items/scopes/signature";
 
 const signatureProvider = (singleTons: SingleTons): (params: SignatureHelpParams) =>
