@@ -1,10 +1,15 @@
-# IEC 61131 Parser & lexer
+# IEC 61131 LSP
 
-This repositiory can be seen as the sequel to [Beremiz POC](https://github.com/adclz/refactored-pancake). 
+This repository can be seen as the sequel to [Beremiz POC](https://github.com/adclz/refactored-pancake). 
 
 While the first one is mainly focused on implementing TC6 & XSLT processors to easily integrate Beremiz project files, this one is primarly about integrating a parser & lexer leveraging tree-sitter & language server protocol for IEC 61131 specifications.
 
-![image info](/vsc-sample.PNG)
+The current LSP implementation works in both desktop and insiders versions of any vscode IDE.
+
+<div style="display: flex; justify-content: space-around;">
+    <img src="assets/vsc-desktop.png" alt="vsc-desktop" style="width: 45%;"/>
+    <img src="assets/vsc-web.png" alt="vsc-web" style="width: 45%;"/>
+</div>
 
 ## Why tree-sitter
 
@@ -30,47 +35,97 @@ tree-sitter has strong community support and is already implemented in the follo
 
 The [LSP](https://microsoft.github.io/language-server-protocol/) is an IDE JSON-RPC protocol initialy launched by Microsoft.
 
-The goal of the LSP is to provide a single platform-agnostic language server with the IDE acting as a client that sends user code and receives events from the server.
-
 The current features of the latest 3.17 specification are listed [here](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#languageFeatures).
 
 Since its introduction in 2016, many LSP clients have been created for IDEs and the [support for new languages is rapidly growing](https://langserver.org/).
 
 Thus, LSP integration can be seamlessly done in vscode, theia or even more IDEs.
 
-## Current implementations
+## Features:
 
-| Feature                                | Implemented | WIP |
-|----------------------------------------|-------------|-----|
-| LSP client                             | ✔️          |     |
-| IEC 61131-2 grammar:                   | -           | -   |
-| B.0 Programming model                  | ✔️          |     |
-| B.1 Common elements                    |             | 🚧  |
-| B.1.1 Letters, digits and identifiers  | ✔️          |     |
-| B.1.2 Constants                        | ✔️          |     |
-| B.1.2.1 Numeric literals               | ✔️          |     |
-| B.1.2.2 Character strings              | ✔️          |     |
-| B.1.2.3 Time literals                  | ✔️          |     |
-| B.1.2.3.1 Duration                     | ✔️          |     |
-| B.1.2.3.2 Time of day and date         | ✔️          |     |
-| B.1.3 Data types                       | ✔️          |     |
-| B.1.3.1 Elementary data types          | ✔️          |     |
-| B.1.3.2 Generic data types             | ✔️          |     |
-| B.1.3.3 Derived data types             | ✔️          |     |
-| B.1.4 Variables                        | ✔️          |     |
-| B.1.4.1 Directly represented variables | ✔️          |     |
-| B.1.4.2 Multi-element variables        | ✔️          |     |
-| B.1.4.3 Declaration and initialization | ✔️          |     |
-| B.1.5 Program organization units       |             | 🚧  |
-| B.1.5.1 Functions                      |             | 🚧* |
-| B.1.5.2 Function blocks                |             | 🚧* |
-| B.1.7 Configuration elements           | ✔️          |     |
-| LSP server features:                   | -           | -   |
-| diagnostics                            |             | 🚧  |
-| highlights                             |             | 🚧  |
+The following LSP specifications are either implemented or in progress.
 
+You can see animated examples of some listed features in the examples under the next section.
 
-🚧* current grammar rule is a todo mock.
+| Specification                    | Implemented | WIP  |
+|----------------------------------|-------------|------|
+| textDocument/semanticTokens/range|             | 🚧   |
+| textDocument/completion          | ✔️          |      |
+| textDocument/documentSymbol      | ✔️          |      |
+| textDocument/documentHighlight   | ✔️          |      |
+| textDocument/references          | ✔️          |      |
+| textDocument/hover               | ✔️          |      |
+| textDocument/typeDefinition      | ✔️          |      |
+| textDocument/definition          | ✔️          |      |
+| textDocument/selectionRange      | ✔️          |      |
+| textDocument/prepareRename       |             | 🚧   |
+| textDocument/rename              |             | 🚧   |
+| textDocument/foldingRange        |             | 🚧   |
+| textDocument/signatureHelp       | ✔️          |      |
+| textDocument/documentLink        | ✔️          |      |
+| textDocument/codeLens            | ✔️          |      |
+| workspace/symbol                 | ✔️          |      |
+
+### Comments
+
+Comments are tracked and supported on both types and variables declarations.
+
+![image info](/assets/comments-tracking.gif)
+
+Since the LSP defines markdown as a valid format for hover requests, comments can be written in markdown.
+
+![image info](/assets/comments-tracking-md.gif)
+
+Demos of some LSP features currently implemented for the IEC 61131-3-2 grammar:
+
+### textDocument/completion
+
+[Specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_completion) 
+
+![image info](/assets/autocomplete.gif)
+
+### textDocument/hover
+
+[Specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_hover) 
+
+![image info](/assets/hover.gif)
+
+### textDocument/references
+### textDocument/definition
+### textDocument/typeDefinition
+
+[References Specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_references) 
+
+[Definition Specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_definition) 
+
+[Type Definition Specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_typeDefinition) 
+
+![image info](/assets/references.gif)
+
+### textDocument/folding
+
+[Specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_foldingRange) 
+
+![image info](/assets/folding.gif)
+
+### textDocument/signatureHelp
+
+[Specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_signatureHelp) 
+
+Given the following structure declaration:
+
+![image info](/assets/signature-fields.png)
+
+The signature would be displayed as such:
+
+![image info](/assets/signature.gif)
+
+### textDocument/documentLink
+
+[Specification](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_documentLink) 
+
+![image info](/assets/documentlink.gif)
+
 
 ## Packages
 
@@ -79,38 +134,17 @@ Thus, LSP integration can be seamlessly done in vscode, theia or even more IDEs.
 │   ├── launch.json - Launch the VSC extension.
 │   └── tasks.json - Tasks to build and watch VSC extension changes.
 ├── packages
-│   └── lsp
-│       └── src
-│           └── server.ts - LSP server code
-│   ├── tree-sitter
-│       ├── queries
-│           ├── highlights.scm - highlights queries
-│           └── indents.scm - indents queries
-│       └── grammar.js - IEC 61131-2 grammar 
-│   ├── volar-lsp* - experimental volar package   
-│   └── vscode-extension
+│   ├── parser-iec-61131-3-2 - iec 61131-2-3 tree sitter parser
+│   ├── parser-iec-61131-3-3 - iec 61131-3-3 tree sitter parser 
+│   ├── vscode-extension
 │       └── src
 │           ├── client.ts - LSP client integration
+│   └── wasi-lsp - Experimental rust WASI rewrite 
 ```
 
-* The volar-lsp package is still experimental and not yet implemented.
+## WASI rewrite
 
-Volar is a [framework](https://volarjs.dev/) designed to simplify the development of language servers using the **@vscode/language-server** package.
-
-It is being used by JetBrains for [their IDEs](https://blog.jetbrains.com/webstorm/2024/04/giving-back-to-the-ecosystem-jetbrains-supports-volar/).
-
-Although it offers great features, it is too targeted at web development and might not be suitable for our current needs.
-
-```mermaid
-graph LR
-    A(tree-sitter) 
-    B(lsp)
-    C(vscode-extension)
-
-    B -. import .-> A
-    C -. import .-> B
-
-```
+Rust lsp server which contains tree sitter rust bindings, grammars, lsp-types, lsp-textdocument and some rusty crates.
 
 ## Install dependencies
 
@@ -144,6 +178,12 @@ cd packages/tree-sitter && tree-sitter generate
 
 In VSC, click on Run and Debug.
 Several tasks are available:
- - **Launch**: Launch the VSC extension.
- - **Build LSP & Launch**: Build the LSP server and Launch the VSC extension.
- - **Build Parser, LSP & Launch**: Build the parser, LSP server and Launch the VSC extension.
+ - **Launch Extension**: Launch the VSC extension.
+ - **Attach to Server**: Debug the LSP server, run after launching the extension.
+
+
+### Run vscode insiders
+
+You'll need to run the **open-in-browser** script inside the vscode-extension package.
+
+If you're using WSL, there's a chance the static server launched by [vscode-test-web](https://github.com/microsoft/vscode-test-web) won't work.
