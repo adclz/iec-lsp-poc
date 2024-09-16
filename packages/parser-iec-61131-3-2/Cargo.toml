@@ -1,5 +1,5 @@
 [package]
-name = "tree-sitter-iec61131"
+name = "tree-sitter-iec61131-3-2"
 description = "Iec61131 grammar for tree-sitter"
 version = "0.0.1"
 license = "MIT"
