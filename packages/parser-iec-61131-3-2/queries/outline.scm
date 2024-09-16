@@ -60,22 +60,22 @@
 
 ; Variable fields
 
-(var2_init_decl) @variable
+[(var_init_decl) (var2_init_decl)] @variable
 
 (var1_list
  (variable_name)) @name
 
 ; ST
 
+(structured_variable) @lazy.reference.multi ; multi elements reference
 (symbolic_variable
  (variable_name)) @lazy.reference ; single element reference
-(multi_element_variable) @lazy.reference.multi ; multi elements reference
-(field_selector) @lazy.reference ; field part of a multi elements referenc
+(field_selector) @lazy.reference ; field part of a multi elements reference
 
 ; Fn invocation
 
 (fb_invocation
-	(fb_name)@name) @invocation
+	(fb_name) @name) @invocation
 
 (param_assignment) @parameter
 

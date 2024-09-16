@@ -1,22 +1,28 @@
-FUNCTION fgdfg : INT
-  VAR CONSTANT
-  // ## slgn
-    VarName : REAL := 1;
-  END_VAR 
+TYPE
+  // Version 0.1
+  ENGINE_COMMANDS: (RUN, STOP);
+  // Version 0.2
+  ENGINE_STATE: (RUNNING, STOPPED, FAULT);
 
-  VarName := 95 + 6.5 + (6 * 6);
-  VarName := 5 / 0;
- 
-END_FUNCTION    
+  A_STRUCT: STRUCT
+    FIELD1: INT; 
+    FIELD2: INT;
+  END_STRUCT
+END_TYPE
 
 
-FUNCTION fgdfg2 : INT
-  VAR CONSTANT
-  // ## slgn
-    VarName : INT := 1;
-  END_VAR 
+FUNCTION ENGINECONTROL : ENGINE_STATE
+    VAR_INPUT RETAIN
+      COMMAND: ENGINE_COMMANDS;
+    END_VAR
+    
+    VAR 
+      STATE: ENGINE_STATE;
+      MY_STRUCT: A_STRUCT;
+    END_VAR
+    
+    STATE := ENGINE_STATE.FAULT;
+    MY_STRUCT.FIELD1 := 1;
 
-  VarName := 95 + 6.5 + (6 * 6);
-  VarName := 5 / 0;
- 
 END_FUNCTION
+
