@@ -8,8 +8,8 @@ export class GlobalScope extends Scope {
     buffer: GapBuffer<Item>
     items: Record<string, Item> = {}
 
-    constructor(uri: string, buffer: GapBuffer<Item>) {
-        super(0, uri)
+    constructor(uri: string, size: number, buffer: GapBuffer<Item>) {
+        super(0, size, uri)
         this.buffer = buffer
     }
 

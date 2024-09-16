@@ -6,11 +6,11 @@ export interface Queries {
 }
 
 export interface ParserData {
-    language: string,
+    //language: string,
     queries: Queries
 }
 
 export interface InitOptions {
     treeSitterWasmUri: string
-    parserData: ParserData
+    //parserData: ParserData
 }

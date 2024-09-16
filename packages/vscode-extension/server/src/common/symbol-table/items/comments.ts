@@ -13,12 +13,12 @@ export const assignComments = (uri: string, tree: Tree, queries: SingleTons["que
         if (item) {
             if (item instanceof Symbol) {
                 if (item.getParent) {
-                    const comment = new CommentSymbol(capture.node.endIndex + 1, uri, capture.node.text)
+                    const comment = new CommentSymbol(capture.node.endIndex + 1, capture.node.endIndex , uri, capture.node.text)
                     item.getParent?.addSymbol(comment, tree)
                 }
             }
             if (item instanceof Scope) {
-                const comment = new CommentSymbol(capture.node.endIndex + 1, uri, capture.node.text)
+                const comment = new CommentSymbol(capture.node.endIndex + 1, capture.node.endIndex , uri, capture.node.text)
                 item.addSymbol(comment, tree)
             }
         }

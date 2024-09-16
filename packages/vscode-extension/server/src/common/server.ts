@@ -20,6 +20,8 @@ import foldingRangeProvider from "./capabilities/foldingRange"
 import signatureProvider from "./capabilities/signature"
 import definitionProvider from "./capabilities/definition"
 import documentLinkProvider from "./capabilities/documentLink"
+import codeLensProvider from "./capabilities/codeLens"
+
 import { GlobalScope } from './symbol-table/items/scopes/global';
 
 //@ts-ignore
@@ -105,6 +107,9 @@ export const startServer = (connection: Connection) => {
                 definitionProvider: true,
                 documentLinkProvider: {
                     resolveProvider: false
+                },
+                codeLensProvider: {
+                    resolveProvider: false
                 }
             }
         };
@@ -135,6 +140,7 @@ export const startServer = (connection: Connection) => {
         connection.onRequest("textDocument/foldingRange", async request => await waitForDiagnostics(singleTons, request, foldingRangeProvider(singleTons)))
         connection.onRequest("textDocument/signatureHelp", async request => await waitForDiagnostics(singleTons, request, signatureProvider(singleTons)))
         connection.onRequest("textDocument/documentLink", async request => await waitForDiagnostics(singleTons, request, documentLinkProvider(singleTons)))
+        connection.onRequest("textDocument/codeLens", async request => await waitForDiagnostics(singleTons, request, codeLensProvider(singleTons)))
 
         console.log("IEC 61131 LSP Server initialized");
 

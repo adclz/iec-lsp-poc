@@ -1,3 +1,5 @@
+import { Item, Scope } from "../symbol-table/items/definitions";
+
 export class GapBuffer<T> {
     private map: Map<number, T>;  // Stores offset as key and associated data as value
 
@@ -46,6 +48,39 @@ export class GapBuffer<T> {
         return this.map.get(offset);
     }
 
+    getTopClosest(offset: number): T | undefined {
+        let result: T | undefined = undefined;
+        let i = offset
+        while (!result) {
+            result = this.map.get(i);
+            i--
+            if (i <= 0) break;
+        }
+        return result
+    }
+
+    getParentScope(offset: number): T | undefined {
+        let result: T | undefined = undefined;
+        let i = offset
+        while (!result) {
+            result = this.map.get(i);
+            if (result instanceof Scope) {
+                console.dir(result)
+                const range = result.getOffset + result.getSize
+                // offset is withing scope range
+                if (offset >= result.getOffset && offset <= range) {
+                    console.log("BREAK")
+                    break;
+                } else {
+                    result = undefined;
+                }
+            } else result = undefined
+            i--
+            if (i <= 0) break;
+        }
+        return result
+    }
+
     // Returns all entries in the map sorted by offset
     getSortedEntries(): [number, T][] {
         return Array.from(this.map.entries()).sort(([offsetA], [offsetB]) => offsetA - offsetB);
@@ -62,5 +97,5 @@ export class GapBuffer<T> {
 
     values(): IterableIterator<T> {
         return this.map.values();
-    } 
+    }
 }

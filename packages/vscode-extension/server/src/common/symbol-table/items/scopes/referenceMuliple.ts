@@ -7,14 +7,6 @@ import { TypeReferenceSymbol } from "../symbols/typeReference";
 import { Tree } from "web-tree-sitter";
 import { GapBuffer } from "../../../common/gap-buffer";
 
-function filterInPlace<T>(array: T[], condition: (...args: any[]) => boolean) {
-    var iOut = 0;
-    for (var i = 0; i < array.length; i++)
-        if (condition(array[i]))
-            array[iOut++] = array[i];
-    array.length = iOut;
-}
-
 export class referenceMulipleScope extends Scope {
     current: Item | null = null
     items: (TypeReferenceSymbol | ReferenceSymbol)[] = []
@@ -47,7 +39,7 @@ export class referenceMulipleScope extends Scope {
                 const exists = this.findTypeReference(item.getName)
                 if (exists) {
                     if (exists.getType instanceof EnumScope) {
-                        const ref = new TypeReferenceSymbol(item.getOffset, item.getUri)
+                        const ref = new TypeReferenceSymbol(item.getOffset, item.getSize, item.getUri)
                         ref.linkTypeReference(exists)
                         exists.addTypeReference(ref)
 
@@ -67,10 +59,9 @@ export class referenceMulipleScope extends Scope {
                 else {
                     const exists = this.findReference(item.getName)
                     if (exists) {
-                        const ref = new ReferenceSymbol(item.getOffset, item.getUri)
+                        const ref = new ReferenceSymbol(item.getOffset, item.getSize, item.getUri)
                         ref.linkReference(exists)
                         exists.addReference(ref)
-                        this.addSymbol(ref, tree)
 
                         buffer.swap(item.getOffset, ref)
                         this.addSymbol(ref, tree)
@@ -90,7 +81,7 @@ export class referenceMulipleScope extends Scope {
                 if (base) {
                     const exists = base.findField(item.getName)
                     if (exists) {
-                        const ref = new ReferenceSymbol(item.getOffset, item.getUri)
+                        const ref = new ReferenceSymbol(item.getOffset, item.getSize, item.getUri)
                         ref.linkReference(exists)
                         exists.addReference(ref)
                         this.addSymbol(ref, tree)
@@ -102,7 +93,7 @@ export class referenceMulipleScope extends Scope {
                     } else {
                         errors.push({
                             message: `Could not find field ${item.getName} in ${base.getTypeName}`,
-                            range: item.getRange(tree),
+                            range: this.items[this.items.length - 1].getRange(tree),
                             severity: 1
                         })
                     }

@@ -9,21 +9,15 @@ export enum LazySymbolKind {
 export class LazySymbol extends Symbol {
     _kind: LazySymbolKind
     name: string
-    intervalRange: [number, number]
 
-    constructor(offset: number, uri: string, intervalRange: [number, number], name: string, kind: LazySymbolKind) {
-        super(offset, uri)
+    constructor(offset: number, size: number, uri: string, name: string, kind: LazySymbolKind) {
+        super(offset, size, uri)
         this.name = name
-        this.intervalRange = intervalRange
         this._kind = kind
     }
 
     public get getName() {
         return this.name!
-    }
-
-    public get getIntervalRange() {
-        return this.intervalRange
     }
 
     public get kind() {

@@ -8,8 +8,8 @@ import { Tree } from "web-tree-sitter";
 export class PrimitiveSymbol extends Symbol {
     type: string
 
-    constructor(offset: number, uri: string, type: string) {
-        super(offset, uri)
+    constructor(offset: number, size: number, uri: string, type: string) {
+        super(offset, size, uri)
         this.type = type
     }
 

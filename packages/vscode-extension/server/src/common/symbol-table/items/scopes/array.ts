@@ -68,7 +68,14 @@ ${comment}
         return `array<${min}..${max}> of ${type}`
     }
 
+    get getTypeReferences() {
+        if (this.parent)
+        return this.parent!.getTypeReferences
+    return []
+    }
+
     getDocumentSymbols(tree: Tree): DocumentSymbol[] {
+        if (!this.name) return []
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Array,

@@ -25,6 +25,8 @@ const hoverProvider = (singleTons: SingleTons): (params: HoverParams) => Promise
         const rt = tree.rootNode.namedDescendantForIndex(offset)
         uniqueSymbol = getSymbols.buffer.get(rt.startIndex)
 
+        console.dir(uniqueSymbol)
+
         if (!uniqueSymbol) {
             return null
         }

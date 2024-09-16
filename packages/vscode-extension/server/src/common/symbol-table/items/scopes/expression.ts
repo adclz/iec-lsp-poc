@@ -120,6 +120,9 @@ export class ExpressionScope extends Scope {
         if (last instanceof referenceMulipleScope) {
             return last.getCompletionItems()
         }
+        else if (this.parent) {
+            return this.parent.getCompletionItems()
+        }
         return null
     }
 }

@@ -56,8 +56,10 @@ const semanticTokensProvider = (singleTons: SingleTons):
 
         const { start, end } = params.range;
         const captures = queries.highlights.captures(tree.rootNode,
-            { row: start.line, column: start.character },
-            { row: end.line, column: end.character }
+            {
+                startPosition: { row: start.line, column: start.character },
+                endPosition: { row: end.line, column: end.character }
+            }
         );
 
         const builder = new SemanticTokensBuilder();

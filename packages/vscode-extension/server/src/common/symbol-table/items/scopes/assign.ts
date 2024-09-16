@@ -1,4 +1,4 @@
-import { Diagnostic } from "vscode-languageserver";
+import { CompletionItem, Diagnostic } from "vscode-languageserver";
 import { NeedTypeCheck, Scope, Item, } from "../definitions";
 import { ReferenceSymbol } from "../symbols/reference";
 import { ExpressionScope } from "./expression";
@@ -51,5 +51,12 @@ export class AssignScope extends Scope implements NeedTypeCheck {
 
     public solveLazy(tree: Tree, buffer: GapBuffer<Item>): Diagnostic[] | null {
         return solveLazy.call(this, tree, buffer)
+    }
+
+    public getCompletionItems(): CompletionItem[] {
+        if (this.parent) {
+            return this.parent.getCompletionItems()
+        }
+        return []
     }
 }

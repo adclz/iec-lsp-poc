@@ -41,10 +41,12 @@ ${comment}
     }
 
     get getTypeName(): string {
+        if (this.name?.getName) return `enum ${this.name.getName}`
         return `enum`
     }
 
     getDocumentSymbols(tree: Tree): DocumentSymbol[] {
+        if (!this.name) return []
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Enum,
@@ -85,6 +87,12 @@ ${comment}
 
     get getMembers() {
         return this.members;
+    }
+
+    get getTypeReferences() {
+        if (this.parent)
+            return this.parent!.getTypeReferences
+        return []
     }
 
     checkEnumRange(value: number, range: Range): Diagnostic[] | null {

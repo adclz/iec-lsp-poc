@@ -25,7 +25,7 @@ const signatureProvider = (singleTons: SingleTons): (params: SignatureHelpParams
         }
 
         const offset = doc.offsetAt(params.position);
-        const uniqueSymbol = getSymbols.buffer.get(offset);
+        const uniqueSymbol = getSymbols.buffer.getParentScope(offset);
 
         if (!uniqueSymbol) {
             return null

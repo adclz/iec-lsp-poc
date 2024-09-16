@@ -5,8 +5,8 @@ import { EnumScope } from "../scopes/enum";
 export class EnumMemberSymbol extends Symbol {
     name: string
 
-    constructor(offset: number, uri: string, name: string) {
-        super(offset, uri)
+    constructor(offset: number, size: number, uri: string, name: string) {
+        super(offset, size, uri)
         this.name = name
     }
 
@@ -15,7 +15,8 @@ export class EnumMemberSymbol extends Symbol {
     }
 
     public get hoverInfo() {
-        const _enum = this.getParent as EnumScope
+        const _enum = this.getParent
+        if (!(_enum instanceof EnumScope)) { return "unsolved" }
         const index = _enum.getMembers.findIndex(member => member === this)
         let codeSnippet = `
 \`\`\`typescript 

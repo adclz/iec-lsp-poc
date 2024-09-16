@@ -15,6 +15,7 @@ type Reference = VariableScope
 
 export abstract class Item {
     private _offset: number
+    private _size: number
     private uri: string
     protected parent?: Scope
     private _lazyReferences: LazySymbol[] = []
@@ -22,16 +23,21 @@ export abstract class Item {
     protected _references: ReferenceSymbol[] = [];
     protected _typeReferences: TypeReferenceSymbol[] = [];
     protected signature?: SignatureScope
-    protected comment?: CommentSymbol
+    public comment?: CommentSymbol
 
-    constructor(offset: number, uri: string, parent?: Scope) {
+    constructor(offset: number, size: number, uri: string, parent?: Scope) {
         this._offset = offset
+        this._size = size - offset
         this.uri = uri
         this.parent = parent
     }
 
     public get getOffset() {
         return this._offset
+    }
+
+    public get getSize() {
+        return this._size
     }
 
     public set setOffset(offset: number) {
@@ -85,9 +91,6 @@ export abstract class Item {
     }
 
     public getCompletionItems(): CompletionItem[] {
-        if (this.parent) {
-            return this.parent.getCompletionItems()
-        }
         return []
     }
 

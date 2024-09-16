@@ -76,12 +76,13 @@ ${comment}
         const type = this.type?.getTypeName || "[Unsolved]"
         const value = this.value?.value
 
-        return `${type} ${value ? `= ${value}` : ''}`
+        return `${type}${value ? ` = ${value}`:''}`
     }
 
     getDocumentSymbols(tree: Tree): DocumentSymbol[] {
+        if (!this.name) return []
         const mainSymbol: DocumentSymbol = {
-            name: this.name!.getName!,
+            name: this.name!.getName! || "undefined",
             kind: DocumentSymbolKind.Variable,
             range: this.getRange(tree),
             selectionRange: this.name!.getRange(tree),

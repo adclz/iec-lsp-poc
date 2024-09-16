@@ -94,6 +94,7 @@ ${comment}
     }
 
     getDocumentSymbols(tree: Tree): DocumentSymbol[] {
+        if (!this.name) return []
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Function,

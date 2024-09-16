@@ -47,12 +47,12 @@ const openDocumentProvider = (singleTons: SingleTons) => {
 
         const buffer = new GapBuffer<Item>()
 
-        const rootNodes = builder(captures, tree, buffer, uri)
+        const rootNodes = builder(captures, tree, uri, buffer)
         if (rootNodes.diagnostics) {
             errors.push(...rootNodes.diagnostics)
         }
 
-        const globalScope = new GlobalScope(uri, buffer)
+        const globalScope = new GlobalScope(uri, tree.rootNode.endIndex, buffer)
 
         rootNodes.rootNodes.forEach(node => {
             if (node.item.item instanceof Scope) {

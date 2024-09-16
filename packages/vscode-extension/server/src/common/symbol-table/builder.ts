@@ -18,7 +18,7 @@ export interface BuilderResult {
     diagnostics: Diagnostic[] | null
 }
 
-export const builder = (captures: QueryCapture[], tree: Tree, buffer: GapBuffer<Item>, uri: string): BuilderResult => {
+export const builder = (captures: QueryCapture[], tree: Tree, uri: string, buffer?: GapBuffer<Item>): BuilderResult => {
     let diagnostics: Diagnostic[] = []
     const rootNodes: Node[] = []
     const stack: Node[] = []
@@ -37,7 +37,7 @@ export const builder = (captures: QueryCapture[], tree: Tree, buffer: GapBuffer<
         if (item.typeCheck) {
             typeChecks.push(item.item as unknown as NeedTypeCheck)
         }
-        buffer.insert(capture.node.startIndex, item.item)
+        if (buffer) buffer.insert(capture.node.startIndex, item.item)
 
         const node = { range: asLspRange(capture.node), items: [], item }
 

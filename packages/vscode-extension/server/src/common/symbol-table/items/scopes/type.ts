@@ -46,13 +46,12 @@ export class TypeScope extends Scope {
     }
 
     get hoverInfo(): string {
-        const name = this.name?.getName;
-        const comment = this.comment ? this.comment.getValue : "";
+        const comment = this.type?.comment ? this.type?.comment.getValue : "";
         const type = this.type?.getTypeName;
 
         let codeSnippet = `
 \`\`\`typescript 
-type ${name} = ${type}
+type ${type}
 \`\`\`
 ${comment}
 `;
@@ -97,6 +96,7 @@ ${comment}
     }
 
     public getDocumentSymbols(tree: Tree): DocumentSymbol[] {
+        if (!this.name) return []
         if (this.type) {
             return this.type.getDocumentSymbols(tree, this.name);
         }

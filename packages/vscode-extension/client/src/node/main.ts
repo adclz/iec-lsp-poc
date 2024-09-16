@@ -12,7 +12,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	const serverModule = vscode.Uri.joinPath(context.extensionUri, 'dist/iec.server.node.js').fsPath;
 
 	// The debug options for the server
-	const debugOptions = { execArgv: ['--nolazy', '--inspect=' + (7000 + Math.round(Math.random() * 999))] };
+	const debugOptions = { execArgv: ['--nolazy', '--inspect=6010'] };
 
 	const serverOptions: ServerOptions = {
 		run: { module: serverModule, transport: TransportKind.ipc },

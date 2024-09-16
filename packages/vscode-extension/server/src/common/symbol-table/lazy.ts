@@ -12,7 +12,7 @@ export const solveLazy = function (this: Item, tree: Tree, buffer: GapBuffer<Ite
     this.lazyReferences.forEach(item => {
        const exists = this.findReference(item.getName)
        if (exists) {
-            const ref = new ReferenceSymbol(item.getOffset, item.getUri)
+            const ref = new ReferenceSymbol(item.getOffset, item.getSize, item.getUri)
             ref.linkReference(exists)
             exists.addReference(ref)
 
@@ -30,7 +30,7 @@ export const solveLazy = function (this: Item, tree: Tree, buffer: GapBuffer<Ite
     this.lazyTypeReferences.forEach(item => {
         const exists = this.findTypeReference(item.getName)
         if (exists) {
-             const ref = new TypeReferenceSymbol(item.getOffset, item.getUri)
+             const ref = new TypeReferenceSymbol(item.getOffset, item.getSize, item.getUri)
              ref.linkTypeReference(exists)
              exists.addTypeReference(ref)
 

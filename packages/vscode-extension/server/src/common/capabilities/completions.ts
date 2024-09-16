@@ -2,6 +2,7 @@ import { Query, SyntaxNode, Tree } from "web-tree-sitter";
 import { CompletionItem, CompletionList, CompletionItemKind, CompletionParams, InsertTextFormat } from "vscode-languageserver";
 import { SingleTons } from "../server";
 import { scopedCompletionProvider } from "../extends/scope-symbols";
+import { NameSymbol } from "../symbol-table/items/symbols/name";
 
 /*const grammar = require.resolve("iec61331-tree-sitter/src/grammar.json");
 const grammarSyntax = JSON.parse(fs.readFileSync(grammar, "utf8"));
@@ -155,8 +156,9 @@ const completionProvider = (singleTons: SingleTons): (params: CompletionParams) 
         const offset = doc.offsetAt(params.position);
 
         let uniqueSymbol;
-        const rt = tree.rootNode.descendantForIndex(offset)
-        uniqueSymbol = getSymbols.buffer.get(rt.startIndex)
+        //const rt = tree.rootNode.descendantForIndex(offset)
+        uniqueSymbol = getSymbols.buffer.getParentScope(offset)
+
 
         if (!uniqueSymbol) {
             return scopedCompletionProvider(null)

@@ -8,9 +8,9 @@ export const getTreeSitterErrors = (node: SyntaxNode) => {
     const errors: SyntaxNode[] = []
     const findError = (node: SyntaxNode) => {
         node.children.forEach(child => {
-            if (child.type === "ERROR" || child.isMissing())
+            if (child.isError || child.isMissing)
                 errors.push(child)
-            if (child.hasError())
+            if (child.hasError)
                 findError(child)
         })
     }
@@ -30,7 +30,7 @@ const formatError = (node: SyntaxNode): Diagnostic => {
             character: node.endPosition.column,
         }
     }
-    if (node.hasError() && node.isMissing()) {
+    if (node.hasError && node.isMissing) {
         return {
             range,
             message: `Syntax error: ${node.toString()}`,

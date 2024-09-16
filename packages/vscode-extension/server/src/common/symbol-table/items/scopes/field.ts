@@ -72,8 +72,9 @@ ${comment}
     }
 
     getDocumentSymbols(tree: Tree): DocumentSymbol[] {
+        if (!this.name) return []
         const mainSymbol: DocumentSymbol = {
-            name: this.name!.getName!,
+            name: this.name!.getName! || "undefined",
             kind: DocumentSymbolKind.Variable,
             range: this.getParent!.getRange(tree),
             selectionRange: this.name!.getRange(tree),

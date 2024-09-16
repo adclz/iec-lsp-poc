@@ -56,7 +56,7 @@ export class SignatureScope extends Scope {
         this.lazyReferences.forEach(item => {
             const exists = this.referTo!.findField(item.getName)
             if (exists) {
-                const ref = new ReferenceSymbol(item.getOffset, item.getUri)
+                const ref = new ReferenceSymbol(item.getOffset, item.getSize, item.getUri)
                 ref.linkReference(exists)
                 exists.addReference(ref)
 

@@ -1,4 +1,4 @@
-import { DidChangeTextDocumentParams, Range, TextDocumentContentChangeEvent } from "vscode-languageserver";
+import { DidChangeTextDocumentParams, Diagnostic, Range, TextDocumentContentChangeEvent } from "vscode-languageserver";
 import { SingleTons } from "../../server";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { getTreeSitterErrors } from "./tree-sitter-lexer";
@@ -38,132 +38,142 @@ const editDocumentProvider = (singleTons: SingleTons) => {
         })
 
         const diagToken = await startProgress(connection, "Running diagnostics")
-
+        let diagnostics: Diagnostic[] = [];
         const uri = params.textDocument.uri
-        // Update the text document with the source
-        const doc = documents.get(params.textDocument.uri)!
-        const updated = TextDocument.update(doc, params.contentChanges, params.textDocument.version)
 
-        for (const change of params.contentChanges as {
-            range: Range;
-            rangeLength?: number;
-            text: string;
-        }[]) {
-            const rangeOffset = updated.offsetAt({
-                line: change.range.start.line,
-                character: change.range.start.character
-            })
+        try {
+            // Update the text document with the source
+            const doc = documents.get(params.textDocument.uri)!
+            const updated = TextDocument.update(doc, params.contentChanges, params.textDocument.version)
 
-            const oldEndIndex = rangeOffset + change.rangeLength!
-            const newEndIndex = rangeOffset + change.text.length
+            for (const change of params.contentChanges as {
+                range: Range;
+                rangeLength?: number;
+                text: string;
+            }[]) {
+                const rangeOffset = updated.offsetAt({
+                    line: change.range.start.line,
+                    character: change.range.start.character
+                })
 
-            // Update the tree with the new source & ranges
-            oldTree.edit({
-                startIndex: rangeOffset,
-                oldEndIndex,
-                newEndIndex,
-                startPosition: { row: change.range.start.line, column: change.range.start.character },
-                oldEndPosition: { row: change.range.end.line + change.rangeLength!, column: change.range.end.line + change.rangeLength! },
-                newEndPosition: { row: change.range.end.line + change.text.length, column: + change.text.length }
-            });
-        }
+                const oldEndIndex = rangeOffset + change.rangeLength!
+                const newEndIndex = rangeOffset + change.text.length
 
-        const tree = parser.parse(updated.getText(), oldTree);
-        trees.set(updated.uri, tree);
+                // Update the tree with the new source & ranges
+                oldTree.edit({
+                    startIndex: rangeOffset,
+                    oldEndIndex,
+                    newEndIndex,
+                    startPosition: { row: change.range.start.line, column: change.range.start.character },
+                    oldEndPosition: { row: change.range.end.line + change.rangeLength!, column: change.range.end.line + change.rangeLength! },
+                    newEndPosition: { row: change.range.end.line + change.text.length, column: change.text.length }
+                });
+            }
 
-        // Get all tree sitter error nodes and format them as diagnostics
-        const errors = getTreeSitterErrors(tree.rootNode)
+            const tree = parser.parse(updated.getText(), oldTree);
+            trees.set(updated.uri, tree);
 
-        // Use the outline query to get all scopes, nodes and their ranges
-        const captures = queries.outline.captures(tree.rootNode)
+            // Get all tree sitter error nodes and format them as diagnostics
+            diagnostics.push(...getTreeSitterErrors(tree.rootNode))
 
-        const buffer = new GapBuffer<Item>()
+            // Use the outline query to get all scopes, nodes and their ranges
+            const captures = queries.outline.captures(tree.rootNode)
 
-        const rootNodes = builder(captures, tree, buffer, uri)
-        if (rootNodes.diagnostics) {
-            errors.push(...rootNodes.diagnostics)
-        }
+            const buffer = new GapBuffer<Item>()
 
-        const globalScope = new GlobalScope(uri, buffer)
+            const rootNodes = builder(captures, tree, uri, buffer)
+            if (rootNodes.diagnostics) {
+                diagnostics.push(...rootNodes.diagnostics)
+            }
 
-        rootNodes.rootNodes.forEach(node => {
-            if (node.item.item instanceof Scope) {
-                const name = node.item.item.getName
-                if (name) {
-                    if (globalScope.items[name.getName]) {
-                        errors.push({
-                            range: node.range,
-                            message: `Duplicate identifier '${name.getName}'`,
-                            relatedInformation: [
-                                {
-                                    location: {
-                                        uri: uri,
-                                        range: globalScope.items[name.getName].getRange(tree)
+            const globalScope = new GlobalScope(uri, tree.rootNode.endIndex, buffer)
+
+            rootNodes.rootNodes.forEach(node => {
+                if (node.item.item instanceof Scope) {
+                    const name = node.item.item.getName
+                    if (name) {
+                        if (globalScope.items[name.getName]) {
+                            diagnostics.push({
+                                range: node.range,
+                                message: `Duplicate identifier '${name.getName}'`,
+                                relatedInformation: [
+                                    {
+                                        location: {
+                                            uri: uri,
+                                            range: globalScope.items[name.getName].getRange(tree)
+                                        },
+                                        message: `'${name.getName}' is declared here`
                                     },
-                                    message: `'${name.getName}' is declared here`
-                                },
-                                {
-                                    location: {
-                                        uri: uri,
-                                        range: node.range,
+                                    {
+                                        location: {
+                                            uri: uri,
+                                            range: node.range,
+                                        },
+                                        message: `'${name.getName}' is declared here`
+                                    }
+                                ]
+                            })
+                            diagnostics.push({
+                                range: globalScope.items[name.getName].getRange(tree),
+                                message: `Duplicate identifier '${name.getName}'`,
+                                relatedInformation: [
+                                    {
+                                        location: {
+                                            uri: uri,
+                                            range: globalScope.items[name.getName].getRange(tree)
+                                        },
+                                        message: `'${name.getName}' is declared here`
                                     },
-                                    message: `'${name.getName}' is declared here`
-                                }
-                            ]
-                        })
-                        errors.push({
-                            range: globalScope.items[name.getName].getRange(tree),
-                            message: `Duplicate identifier '${name.getName}'`,
-                            relatedInformation: [
-                                {
-                                    location: {
-                                        uri: uri,
-                                        range: globalScope.items[name.getName].getRange(tree)
-                                    },
-                                    message: `'${name.getName}' is declared here`
-                                },
-                                {
-                                    location: {
-                                        uri: uri,
-                                        range: node.range,
-                                    },
-                                    message: `'${name.getName}' is declared here`
-                                }
-                            ]
-                        })
-                    }
-                    else {
-                        globalScope.items[name.getName] = node.item.item
-                        node.item.item.setParent(globalScope)
+                                    {
+                                        location: {
+                                            uri: uri,
+                                            range: node.range,
+                                        },
+                                        message: `'${name.getName}' is declared here`
+                                    }
+                                ]
+                            })
+                        }
+                        else {
+                            globalScope.items[name.getName] = node.item.item
+                            node.item.item.setParent(globalScope)
+                        }
                     }
                 }
-            }
-        })
+            })
 
-        rootNodes.lazyItems.forEach(item => {
-            const result = item.solveLazy(tree, buffer)
-            if (result) {
-                errors.push(...result)
-            }
-        })
+            rootNodes.lazyItems.forEach(item => {
+                const result = item.solveLazy(tree, buffer)
+                if (result) {
+                    diagnostics.push(...result)
+                }
+            })
 
-        rootNodes.typeChecks.forEach(expression => {
-            const result = expression.typeCheck(tree)
-            if (result) {
-                errors.push(...result)
-            }
-        })
+            rootNodes.typeChecks.forEach(expression => {
+                const result = expression.typeCheck(tree)
+                if (result) {
+                    diagnostics.push(...result)
+                }
+            })
 
-        assignComments(uri, tree, queries, buffer)
+            assignComments(uri, tree, queries, buffer)
 
-        // Add the ranges to the symbols map
-        buffers.set(doc.uri, globalScope)
+            // Add the ranges to the symbols map
+            buffers.set(doc.uri, globalScope)
 
-        //@ts-expect-error
-        diagsResolve()
+        } catch (e: any) {
+            connection.window.showErrorMessage(e.message)
+            //@ts-expect-error
+            diagsReject(e)
+        }
+        finally {
+            connection.sendDiagnostics({ uri, diagnostics })
 
-        endProgress(connection, diagToken, "Diagnostics complete")
-        connection.sendDiagnostics({ uri: doc.uri, diagnostics: errors })
+            endProgress(connection, diagToken, "Diagnostics complete")
+
+            //@ts-expect-error
+            diagsResolve()
+        }
     }
 }
 

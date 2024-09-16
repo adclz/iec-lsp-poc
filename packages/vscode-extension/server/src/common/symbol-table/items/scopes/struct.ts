@@ -72,10 +72,18 @@ ${comment}
     }
 
     get getTypeName(): string {
+        if (this.name?.getName) return `struct ${this.name.getName}`
         return `struct`
     }
 
+    get getTypeReferences() {
+        if (this.parent)
+        return this.parent!.getTypeReferences
+    return []
+    }
+
     getDocumentSymbols(tree: Tree): DocumentSymbol[] {
+        if (!this.name) return []
         const mainSymbol: DocumentSymbol = {
             name: this.name!.getName!,
             kind: DocumentSymbolKind.Struct,
@@ -85,6 +93,7 @@ ${comment}
         };
 
         Object.values(this.fields).forEach(field => {
+            if (field.getName)
             mainSymbol.children!.push(...field.getDocumentSymbols(tree));
         });
 
