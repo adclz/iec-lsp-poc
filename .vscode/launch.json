@@ -8,11 +8,23 @@
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-extension"
 			],
+			"outFiles": [
+				"${workspaceFolder}/packages/vscode-extension/dist/**/*.js",
+			],
 			"name": "Launch Extension",
 			"preLaunchTask": "npm: watch",
 			"request": "launch",
 			"type": "extensionHost",
+			"smartStep": true,
 			"sourceMaps": true
-		}
+		},
+		{
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Server",
+            "port": 6010,
+            "restart": true,
+            "outFiles": ["${workspaceFolder}/packages/vscode-extension/dist/**/*.js"]
+        },
 	]
 }

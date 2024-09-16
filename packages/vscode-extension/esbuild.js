@@ -52,7 +52,7 @@ const clientBuildOptions = {
 	external: ['vscode'],
 	target: 'es2020',
 	format: 'cjs',
-	sourcemap: 'external',
+	sourcemap: true,
 }
 
 const browserClient = esbuild.context({
@@ -81,7 +81,7 @@ const serverBuildOptions = {
 	external: ['fs', 'path', "node-gyp-build"], // not ideal but because of treesitter/emcc
 	target: 'es2020',
 	format: 'iife',
-	sourcemap: 'external',
+	sourcemap: true,
 	plugins: [esbuildProblemMatcherPlugin],
 }
 

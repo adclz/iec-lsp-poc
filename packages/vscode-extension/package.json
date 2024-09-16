@@ -74,7 +74,7 @@
     "@typescript-eslint/parser": "^7.11.0",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
-    "@vscode/test-web": "^0.0.57",
+    "@vscode/test-web": "^0.0.60",
     "esbuild": "^0.21.5",
     "eslint": "^8.57.0",
     "typescript": "^5.4.5"
